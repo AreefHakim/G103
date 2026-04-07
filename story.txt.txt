@@ -2,6 +2,11 @@ Adam wakes up in the morning.
 He brushes his teeth.
 He takes a bath.
 He has breakfast.
+<<<<<<< HEAD
 Then he watched YouTube.
 He goes to class
+=======
+Then he checked Instagram.
+He goes to class.
+>>>>>>> 66362e7 (Initialise respository)
 He sits besides Marquinhos
