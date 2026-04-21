@@ -1,72 +1,75 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_wtf import FlaskForm 
+from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
-from flask_bcrypt import Bcrypt 
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'                              # connects app.py to database.db
-app.config['SECRET_KEY'] = 'thisisasecretkey'                                                # to secure the session cookie 
+# --- CONFIGURATION ---
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = 'thisisasecretkey'
 
-db = SQLAlchemy(app)                                                                         # creates the database instance 
+db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-Login_manager = LoginManager()
-Login_manager.init_app(app)
-Login_manager.login_view = "login"
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
-@Login_manager.user_loader                                                                   #allows app and flask login to work together when logging in
+@login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# --- DATABASE MODELS ---
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)                                             #identity column for user
-    username = db.Column(db.String(20), nullable=False, unique=True)                         #both of these fields cant be empty 
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    # Link user to a single store
+    store = db.relationship('Store', backref='owner', uselist=False)
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    store_name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(200))
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    products = db.relationship('Product', backref='store', lazy=True)
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    category = db.Column(db.String(50))
+    store_id = db.Column(db.Integer, db.ForeignKey('store.id'), nullable=False)
+
+# --- FORMS ---
 
 class RegisterForm(FlaskForm):
-    username = StringField(validators={InputRequired(), Length(
-        min=4, max=20)}, render_kw={"placeholder": "Username"})
-    
-    password = PasswordField(validators={InputRequired(), Length(
-        min=4, max=20)}, render_kw={"placeholder": "Password"})
-    
-    submit = SubmitField("Register")
+    username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
+    password = PasswordField(validators=[InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+    submit = SubmitField('Register')
 
     def validate_username(self, username):
-        existing_user_username = User.query.filter_by(
-            username=username.data).first()
-        
+        existing_user_username = User.query.filter_by(username=username.data).first()
         if existing_user_username:
-            raise ValidationError(
-                "That username already exists. Please choose a different one.")
-        
+            raise ValidationError('That username already exists. Please choose a different one.')
+
 class LoginForm(FlaskForm):
-    username = StringField(validators={InputRequired(), Length(
-        min=4, max=20)}, render_kw={"placeholder": "Username"})
-    
-    password = PasswordField(validators={InputRequired(), Length(
-        min=4, max=20)}, render_kw={"placeholder": "Password"})
-    
-    submit = SubmitField("Login")
-    
+    username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
+    password = PasswordField(validators=[InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+    submit = SubmitField('Login')
+
+# --- AUTHENTICATION ROUTES ---
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
-
-@app.route('/login', methods={'GET', 'POST'})
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -77,80 +80,101 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-@app.route('/dashboard', methods={'GET', 'POST'})
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        new_user = User(username=form.username.data, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
+
+@app.route('/dashboard')
 @login_required
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/logout', methods={'GET', 'POST'})
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/register', methods={'GET', 'POST'})
-def register():
-    form = RegisterForm()
+@app.route('/forgot-password')
+def forgot_password():
+    return render_template('forgotpassword.html')
 
-    if form.validate_on_submit():                                                      # whenever we submit this form, we immediately create a hashed version of the password
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login'))
+# --- MARKETPLACE & STORE ROUTES ---
 
-    return render_template('register.html', form=form)
-
-@app.route('/api/store/register', methods=['POST'])                                     # Store registration JSON
+@app.route('/register-store', methods=['GET', 'POST'])
 @login_required
 def register_store():
-    data = request.get_json()
-
-    store_name = data.get('store_name')
-    description = data.get('description')
-
-    if not store_name:
-        return jsonify({"error": "Store name is required"}), 400
-
-    new_store = Store(
-        store_name=store_name,
-        description=description,
-        owner_id=current_user.id
-    )
-
-    db.session.add(new_store)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store registered successfully",
-        "store": {
-            "id": new_store.id,
-            "store_name": new_store.store_name
-        }
-    }), 201
-
-@app.route('/store/register', methods=['GET', 'POST'])                                      # Store registration for html
-@login_required
-def register_store_page():
     if request.method == 'POST':
         store_name = request.form.get('store_name')
         description = request.form.get('description')
-
-        if not store_name:
-            return "Store name is required"
-
-        new_store = Store(
-            store_name=store_name,
-            description=description,
-            owner_id=current_user.id
-        )
-
+        new_store = Store(name=store_name, description=description, user_id=current_user.id)
         db.session.add(new_store)
         db.session.commit()
+        return redirect(url_for('my_store'))
+    return render_template('registerstore.html')
 
-        return redirect(url_for('dashboard'))
+@app.route('/my-store')
+@login_required
+def my_store():
+    store = Store.query.filter_by(user_id=current_user.id).first()
+    if not store:
+        return redirect(url_for('register_store'))
+    return render_template('mystore.html', store=store)
 
-    return render_template('register_store.html')
+@app.route('/add-product', methods=['GET', 'POST'])
+@login_required
+def add_product():
+    user_store = Store.query.filter_by(user_id=current_user.id).first()
+    if not user_store:
+        return redirect(url_for('register_store'))
 
-if __name__ == '__main__':
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        selected_cat = request.form.get('category_select')
+        
+        category = request.form.get('other_category') if selected_cat == 'Others' else selected_cat
+
+        new_product = Product(name=name, price=float(price), category=category, store_id=user_store.id)
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('my_store'))
+        
+    return render_template('add_product.html')
+
+@app.route('/products')
+def products():
+    all_products = Product.query.all()
+    return render_template('products.html', products=all_products)
+
+@app.route('/view-product/<int:product_id>')
+def view_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template('product_detail.html', product=product)
+
+# --- API ROUTES (FOR BACKEND TEAM) ---
+
+@app.route('/api/store/register', methods=['POST'])
+@login_required
+def api_register_store():
+    data = request.get_json()
+    store_name = data.get('store_name')
+    if not store_name:
+        return jsonify({"error": "Store name is required"}), 400
+    
+    new_store = Store(name=store_name, description=data.get('description'), user_id=current_user.id)
+    db.session.add(new_store)
+    db.session.commit()
+    return jsonify({"message": "Store registered successfully"}), 201
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
