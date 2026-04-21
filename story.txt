@@ -2,6 +2,10 @@ Adam wakes up in the morning.
 He brushes his teeth.
 He takes bath.
 He has breakfast.
+<<<<<<< HEAD
 Then he watched Youtube
+=======
+Then he checked Instagram
+>>>>>>> 7f2174c (Initialise repository.)
 He goes to class...
 He sleeps in the class
