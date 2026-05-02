@@ -101,7 +101,7 @@ def register():
 
     return render_template('register.html', form=form)
 
-@app.route('/api/store/register', methods=['POST'])
+@app.route('/api/store/register', methods=['POST'])                                     # Store registration JSON
 @login_required
 def register_store():
     data = request.get_json()
@@ -129,7 +129,7 @@ def register_store():
         }
     }), 201
 
-@app.route('/store/register', methods=['GET', 'POST'])
+@app.route('/store/register', methods=['GET', 'POST'])                                      # Store registration for html
 @login_required
 def register_store_page():
     if request.method == 'POST':
