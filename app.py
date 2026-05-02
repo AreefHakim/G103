@@ -33,7 +33,7 @@ class Store(db.Model):
     store_name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(200))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    
+
 class RegisterForm(FlaskForm):
     username = StringField(validators={InputRequired(), Length(
         min=4, max=20)}, render_kw={"placeholder": "Username"})
@@ -100,6 +100,34 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
+
+@app.route('/api/store/register', methods=['POST'])
+@login_required
+def register_store():
+    data = request.get_json()
+
+    store_name = data.get('store_name')
+    description = data.get('description')
+
+    if not store_name:
+        return jsonify({"error": "Store name is required"}), 400
+
+    new_store = Store(
+        store_name=store_name,
+        description=description,
+        owner_id=current_user.id
+    )
+
+    db.session.add(new_store)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store registered successfully",
+        "store": {
+            "id": new_store.id,
+            "store_name": new_store.store_name
+        }
+    }), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
