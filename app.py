@@ -28,6 +28,12 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)                         #both of these fields cant be empty
     password = db.Column(db.String(80), nullable=False)
 
+class Store(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    store_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(200))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
 class RegisterForm(FlaskForm):
     username = StringField(validators={InputRequired(), Length(
         min=4, max=20)}, render_kw={"placeholder": "Username"})
