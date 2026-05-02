@@ -129,5 +129,28 @@ def register_store():
         }
     }), 201
 
+@app.route('/store/register', methods=['GET', 'POST'])
+@login_required
+def register_store_page():
+    if request.method == 'POST':
+        store_name = request.form.get('store_name')
+        description = request.form.get('description')
+
+        if not store_name:
+            return "Store name is required"
+
+        new_store = Store(
+            store_name=store_name,
+            description=description,
+            owner_id=current_user.id
+        )
+
+        db.session.add(new_store)
+        db.session.commit()
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('register_store.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
