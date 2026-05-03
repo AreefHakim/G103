@@ -13,23 +13,57 @@
 <body>
     <div class="login-card">
         <h2 class="text-center mb-4">Login Page</h2>
-        <form method="POST" action="">
+        
+        <form method="POST" action="" class="needs-validation" novalidate>
             {{ form.hidden_tag() }}
+            
             <div class="mb-3">
                 <label class="form-label">Username</label>
-                {{ form.username(class="form-control", placeholder="Enter username") }}
+                {{ form.username(class="form-control", placeholder="Enter username", required=True) }}
+                <div class="invalid-feedback">Please enter your username.</div>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                {{ form.password(class="form-control", placeholder="Enter password") }}
+                {{ form.password(class="form-control", placeholder="Enter password", required=True) }}
+                <div class="invalid-feedback">Password is required.</div>
             </div>
+
             <div class="d-grid gap-2">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
+
         <div class="text-center mt-3">
+            <small><a href="{{ url_for('forgotpassword') }}" class="text-muted text-decoration-none">Forgot Password?</a></small>
+            <hr class="my-2"> 
             <small>Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a></small>
         </div>
     </div>
-</body>
+
+    <script>
+        (function () {
+            'use strict'
+
+            // Get all forms with 'needs-validation' class
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop through each form
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        
+                        // If form is invalid, stop the submission
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        // Add class to show red/green status
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+    </body>
 </html>
