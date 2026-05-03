@@ -13,6 +13,7 @@
             display: flex;
             align-items: center;
             color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .home-box {
             background: rgba(255, 255, 255, 0.1);
@@ -20,6 +21,7 @@
             padding: 3rem;
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
     </style>
 </head>
@@ -29,12 +31,11 @@
         <div class="row justify-content-center">
             <div class="col-md-8 home-box">
                 <h1 class="display-3 fw-bold mb-3">Project Authentication</h1>
-                <p class="lead mb-5">Selamat datang ke sistem kami. Sila log masuk atau daftar akaun baharu untuk bermula.</p>
+                <p class="lead mb-5">Welcome to our system. Please log in or register a new account to get started.</p>
                 
                 <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                    <!-- Pastikan URL ini sepadan dengan routing dalam app.py kawan awak -->
                     <a href="{{ url_for('login') }}" class="btn btn-light btn-lg px-5 fw-bold text-primary">Login</a>
-                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-5">Register</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-5 fw-bold">Register</a>
                 </div>
             </div>
         </div>
