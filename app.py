@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -79,11 +79,19 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-
 @app.route('/forgot-password')
 def forgotpassword():
     return render_template('forgotpassword.html')
 
+# --- TAMBAHAN ROUTE REGISTER STORE DI SINI ---
+@app.route('/register-store', methods=['GET', 'POST'])
+@login_required
+def registerstore():
+    if request.method == 'POST':
+        # Sini nanti kawan awak akan tambah kod untuk simpan data store ke database
+        return redirect(url_for('dashboard'))
+    return render_template('registerstore.html')
+# --------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)
