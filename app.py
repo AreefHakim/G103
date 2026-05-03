@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, url_for, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -103,7 +104,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/forgot-password')
-def forgot_password():
+def forgotpassword():
     return render_template('forgotpassword.html')
 
 # --- MARKETPLACE & STORE ROUTES ---
