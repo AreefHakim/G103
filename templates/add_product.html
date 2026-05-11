@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - MMU EXCHANGE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0b0b0f; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2e2e32;
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        h2 { font-weight: 800; letter-spacing: -1px; margin-bottom: 30px; }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            background-color: #1a1a1e !important; 
+            border: 1px solid #3e3e42 !important;
+            color: #ffffff !important; 
+            border-radius: 12px;
+            padding: 14px;
+            transition: 0.2s;
+        }
+
+        /* --- FIX PLACEHOLDER (TULISAN CONTOH) --- */
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important; /* Ditingkatkan dari 0.2 ke 0.5 */
+            opacity: 1; /* Penting untuk Firefox */
+        }
+
+        /* Khusus untuk browser Chrome/Edge/Safari */
+        input::-webkit-input-placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .form-select option {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #252529 !important;
+            border-color: #5e3bee !important;
+            box-shadow: 0 0 0 0.25rem rgba(94, 59, 238, 0.2);
+            outline: none;
+            color: #ffffff !important;
+        }
+
+        #other-category-div { 
+            display: none; 
+            margin-top: 20px;
+            padding: 15px;
+            border-left: 3px solid #5e3bee;
+            background: rgba(94, 59, 238, 0.05);
+            border-radius: 0 12px 12px 0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .btn-list {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 16px;
+            border: none;
+            margin-top: 25px;
+            transition: 0.3s;
+        }
+
+        .btn-list:hover {
+            background-color: #e2e2e2;
+            transform: translateY(-2px);
+        }
+
+        .cancel-link {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .cancel-link:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="form-container">
+                    <h2 class="text-center">Add New Product</h2>
+                    
+                    <form action="{{ url_for('add_product') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Contoh: Mechanical Keyboard" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Price (RM)</label>
+                            <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="categorySelect" name="category_select" onchange="checkCategory(this)" required>
+                                <option value="" disabled selected>-- Select Category --</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Services">Services</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+
+                        <div id="other-category-div">
+                            <label class="form-label">Type your category</label>
+                            <input type="text" id="other_category" name="other_category" class="form-control" placeholder="e.g. Food, Books, etc.">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-list">List Product</button>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('my_store') }}" class="cancel-link">Cancel and go back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkCategory(select) {
+            var otherDiv = document.getElementById('other-category-div');
+            var otherInput = document.getElementById('other_category');
+            
+            if (select.value === 'Others') {
+                otherDiv.style.display = 'block';
+                otherInput.setAttribute('required', 'required');
+                otherInput.focus();
+            } else {
+                otherDiv.style.display = 'none';
+                otherInput.removeAttribute('required');
+                otherInput.value = "";
+            }
+        }
+    </script>
+</body>
+</html>

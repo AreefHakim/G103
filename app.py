@@ -56,14 +56,14 @@ class RegisterForm(FlaskForm):
     def validate_username(self, username):
         existing_user_username = User.query.filter_by(username=username.data).first()
         if existing_user_username:
-            raise ValidationError('That username already exists. Please choose a different one.')
+            raise ValidationError('Username sudah wujud.')
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
     password = PasswordField(validators=[InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField('Login')
 
-# --- AUTHENTICATION ROUTES ---
+# --- ROUTES ---
 
 @app.route('/')
 def home():
@@ -80,6 +80,11 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -90,11 +95,6 @@ def register():
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
 
 @app.route('/logout')
 @login_required
@@ -114,7 +114,7 @@ def register_store():
     if request.method == 'POST':
         store_name = request.form.get('store_name')
         description = request.form.get('description')
-        new_store = Store(name=store_name, description=description, user_id=current_user.id)
+        new_store = Store(name=store_name, description=description, owner=current_user)
         db.session.add(new_store)
         db.session.commit()
         return redirect(url_for('my_store'))
@@ -128,6 +128,16 @@ def my_store():
         return redirect(url_for('register_store'))
     return render_template('mystore.html', store=store)
 
+@app.route('/delete-store', methods=['POST'])
+@login_required
+def delete_store():
+    user_store = Store.query.filter_by(user_id=current_user.id).first()
+    if user_store:
+        Product.query.filter_by(store_id=user_store.id).delete()
+        db.session.delete(user_store)
+        db.session.commit()
+    return redirect(url_for('dashboard'))
+
 @app.route('/add-product', methods=['GET', 'POST'])
 @login_required
 def add_product():
@@ -140,7 +150,10 @@ def add_product():
         price = request.form.get('price')
         selected_cat = request.form.get('category_select')
         
-        category = request.form.get('other_category') if selected_cat == 'Others' else selected_cat
+        if selected_cat == 'Others':
+            category = request.form.get('other_category')
+        else:
+            category = selected_cat
 
         new_product = Product(name=name, price=float(price), category=category, store_id=user_store.id)
         db.session.add(new_product)

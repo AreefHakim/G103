@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body { 
+            background-color: #0b0b0f; 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+            padding-top: 50px;
+            min-height: 100vh;
+        }
+
+        .detail-card { 
+            background: #121217; 
+            border: 1px solid #2e2e32; 
+            border-radius: 24px; 
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .price { 
+            color: #a288ff; 
+            font-weight: 800; 
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(162, 136, 255, 0.3);
+        }
+
+        /* Ini fix untuk tulisan yang tak nampak tadi */
+        .description-text {
+            color: rgba(255, 255, 255, 0.85); /* Warna putih terang tapi soft */
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .label-text {
+            color: #a288ff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-chat {
+            background: #2563eb;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .btn-chat:hover {
+            background: #1d4ed8;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: rgba(255,255,255,0.6);
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-7">
+                
+                <a href="{{ url_for('products') }}" class="back-link mb-4 d-inline-block">
+                    <i class="bi bi-arrow-left"></i> ← Back to Marketplace
+                </a>
+                
+                <div class="detail-card">
+                    <span class="badge rounded-pill px-3 py-2 mb-3" style="background: rgba(162, 136, 255, 0.1); color: #a288ff; border: 1px solid rgba(162, 136, 255, 0.3);">
+                        {{ product.category if product.category else 'General' }}
+                    </span>
+                    
+                    <h1 class="display-5 fw-bold mb-2">{{ product.name }}</h1>
+                    <p class="price mb-4">RM {{ "%.2f"|format(product.price) }}</p>
+                    
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 30px 0;">
+                    
+                    <div class="mb-4">
+                        <p class="label-text mb-1">Sold by</p>
+                        <h5 class="text-white fw-bold">{{ product.store.name }}</h5>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="label-text mb-1">Description</p>
+                        <p class="description-text">
+                            {{ product.store.description if product.store.description else 'No description provided by the seller.' }}
+                        </p>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <button class="btn btn-chat btn-lg w-100 text-white">
+                            Chat with Seller
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 text-muted small">
+                    MMU Exchange &bull; Safe & Reliable Campus Marketplace
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
