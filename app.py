@@ -169,5 +169,23 @@ def get_stores():
 
     return jsonify(store_list)
 
+@app.route('/store/<int:store_id>', methods=['GET'])                                           # READ - View single store
+@login_required
+def get_store(store_id):
+
+    store = Store.query.filter_by(
+        id=store_id,
+        owner_id=current_user.id
+    ).first()
+
+    if not store:
+        return jsonify({"error": "Store not found"}), 404
+
+    return jsonify({
+        "id": store.id,
+        "store_name": store.store_name,
+        "description": store.description
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
