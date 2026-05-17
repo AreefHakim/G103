@@ -187,5 +187,33 @@ def get_store(store_id):
         "description": store.description
     })
 
+@app.route('/store/update/<int:store_id>', methods=['PUT'])                                    # UPDATE - Edit store
+@login_required
+def update_store(store_id):
+
+    store = Store.query.filter_by(
+        id=store_id,
+        owner_id=current_user.id
+    ).first()
+
+    if not store:
+        return jsonify({"error": "Store not found"}), 404
+
+    data = request.get_json()
+
+    store.store_name = data.get('store_name', store.store_name)
+    store.description = data.get('description', store.description)
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store updated successfully",
+        "store": {
+            "id": store.id,
+            "store_name": store.store_name,
+            "description": store.description
+        }
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
