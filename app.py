@@ -29,7 +29,6 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    # Link user to a single store
     store = db.relationship('Store', backref='owner', uselist=False)
 
 class Store(db.Model):
@@ -108,47 +107,9 @@ def forgotpassword():
 
 # --- MARKETPLACE & STORE ROUTES ---
 
-<<<<<<< HEAD
 @app.route('/register-store', methods=['GET', 'POST'])
 @login_required
 def register_store():
-=======
-    return render_template('register.html', form=form)
-
-#CRUD (CREATE, READ, UPDATE, DELETE)
-
-@app.route('/api/store/register', methods=['POST'])                                     #CREATE - Store registration JSON
-@login_required
-def register_store():
-    data = request.get_json()
-
-    store_name = data.get('store_name')
-    description = data.get('description')
-
-    if not store_name:
-        return jsonify({"error": "Store name is required"}), 400
-
-    new_store = Store(
-        store_name=store_name,
-        description=description,
-        owner_id=current_user.id
-    )
-
-    db.session.add(new_store)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store registered successfully",
-        "store": {
-            "id": new_store.id,
-            "store_name": new_store.store_name
-        }
-    }), 201
-
-@app.route('/store/register', methods=['GET', 'POST'])                                      #CREATE - Store registration for html
-@login_required
-def register_store_page():
->>>>>>> 1c82009a3955b736d702f915844d6f8b25c0d188
     if request.method == 'POST':
         store_name = request.form.get('store_name')
         description = request.form.get('description')
@@ -176,7 +137,6 @@ def delete_store():
         db.session.commit()
     return redirect(url_for('dashboard'))
 
-<<<<<<< HEAD
 @app.route('/add-product', methods=['GET', 'POST'])
 @login_required
 def add_product():
@@ -229,89 +189,4 @@ def api_register_store():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-=======
-@app.route('/stores', methods=['GET'])                                                        #READ - View all stores
-@login_required
-def get_stores():
-
-    stores = Store.query.filter_by(owner_id=current_user.id).all()
-
-    store_list = []
-
-    for store in stores:
-        store_list.append({
-            "id": store.id,
-            "store_name": store.store_name,
-            "description": store.description
-        })
-
-    return jsonify(store_list)
-
-@app.route('/store/<int:store_id>', methods=['GET'])                                           #READ - View single store
-@login_required
-def get_store(store_id):
-
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
-
-    if not store:
-        return jsonify({"error": "Store not found"}), 404
-
-    return jsonify({
-        "id": store.id,
-        "store_name": store.store_name,
-        "description": store.description
-    })
-
-@app.route('/store/update/<int:store_id>', methods=['PUT'])                                    #UPDATE - Edit store
-@login_required
-def update_store(store_id):
-
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
-
-    if not store:
-        return jsonify({"error": "Store not found"}), 404
-
-    data = request.get_json()
-
-    store.store_name = data.get('store_name', store.store_name)
-    store.description = data.get('description', store.description)
-
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store updated successfully",
-        "store": {
-            "id": store.id,
-            "store_name": store.store_name,
-            "description": store.description
-        }
-    })
-
-@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                                #DELETE - Delete store
-@login_required
-def delete_store(store_id):
-
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
-
-    if not store:
-        return jsonify({"error": "Store not found"}), 404
-
-    db.session.delete(store)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store deleted successfully"
-    })
-
-if __name__ == '__main__':
->>>>>>> 1c82009a3955b736d702f915844d6f8b25c0d188
     app.run(debug=True)
