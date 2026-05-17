@@ -101,7 +101,9 @@ def register():
 
     return render_template('register.html', form=form)
 
-@app.route('/api/store/register', methods=['POST'])                                     # Store registration JSON
+#CRUD (CREATE, READ, UPDATE, DELETE)
+
+@app.route('/api/store/register', methods=['POST'])                                     #CREATE - Store registration JSON
 @login_required
 def register_store():
     data = request.get_json()
@@ -129,7 +131,7 @@ def register_store():
         }
     }), 201
 
-@app.route('/store/register', methods=['GET', 'POST'])                                      # Store registration for html
+@app.route('/store/register', methods=['GET', 'POST'])                                      #CREATE - Store registration for html
 @login_required
 def register_store_page():
     if request.method == 'POST':
@@ -152,7 +154,7 @@ def register_store_page():
 
     return render_template('register_store.html')
 
-@app.route('/stores', methods=['GET'])                                                        # READ - View all stores
+@app.route('/stores', methods=['GET'])                                                        #READ - View all stores
 @login_required
 def get_stores():
 
@@ -169,7 +171,7 @@ def get_stores():
 
     return jsonify(store_list)
 
-@app.route('/store/<int:store_id>', methods=['GET'])                                           # READ - View single store
+@app.route('/store/<int:store_id>', methods=['GET'])                                           #READ - View single store
 @login_required
 def get_store(store_id):
 
@@ -187,7 +189,7 @@ def get_store(store_id):
         "description": store.description
     })
 
-@app.route('/store/update/<int:store_id>', methods=['PUT'])                                    # UPDATE - Edit store
+@app.route('/store/update/<int:store_id>', methods=['PUT'])                                    #UPDATE - Edit store
 @login_required
 def update_store(store_id):
 
@@ -215,7 +217,7 @@ def update_store(store_id):
         }
     })
 
-@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                                # DELETE - Delete store
+@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                                #DELETE - Delete store
 @login_required
 def delete_store(store_id):
 
