@@ -152,5 +152,22 @@ def register_store_page():
 
     return render_template('register_store.html')
 
+@app.route('/stores', methods=['GET'])                                                        # READ - View all stores
+@login_required
+def get_stores():
+
+    stores = Store.query.filter_by(owner_id=current_user.id).all()
+
+    store_list = []
+
+    for store in stores:
+        store_list.append({
+            "id": store.id,
+            "store_name": store.store_name,
+            "description": store.description
+        })
+
+    return jsonify(store_list)
+
 if __name__ == '__main__':
     app.run(debug=True)
