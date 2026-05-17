@@ -215,5 +215,24 @@ def update_store(store_id):
         }
     })
 
+@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                                # DELETE - Delete store
+@login_required
+def delete_store(store_id):
+
+    store = Store.query.filter_by(
+        id=store_id,
+        owner_id=current_user.id
+    ).first()
+
+    if not store:
+        return jsonify({"error": "Store not found"}), 404
+
+    db.session.delete(store)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store deleted successfully"
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
