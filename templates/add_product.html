@@ -41,7 +41,7 @@
 
         /* --- FIX PLACEHOLDER (TULISAN CONTOH) --- */
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important; /* Ditingkatkan dari 0.2 ke 0.5 */
+            color: rgba(255, 255, 255, 0.5) !important;
             opacity: 1; /* Penting untuk Firefox */
         }
 
@@ -120,53 +120,4 @@
 
                         <div class="mb-3">
                             <label class="form-label">Price (RM)</label>
-                            <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select class="form-select" id="categorySelect" name="category_select" onchange="checkCategory(this)" required>
-                                <option value="" disabled selected>-- Select Category --</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Fashion">Fashion</option>
-                                <option value="Services">Services</option>
-                                <option value="Others">Others</option>
-                            </select>
-                        </div>
-
-                        <div id="other-category-div">
-                            <label class="form-label">Type your category</label>
-                            <input type="text" id="other_category" name="other_category" class="form-control" placeholder="e.g. Food, Books, etc.">
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-list">List Product</button>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <a href="{{ url_for('my_store') }}" class="cancel-link">Cancel and go back</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function checkCategory(select) {
-            var otherDiv = document.getElementById('other-category-div');
-            var otherInput = document.getElementById('other_category');
-            
-            if (select.value === 'Others') {
-                otherDiv.style.display = 'block';
-                otherInput.setAttribute('required', 'required');
-                otherInput.focus();
-            } else {
-                otherDiv.style.display = 'none';
-                otherInput.removeAttribute('required');
-                otherInput.value = "";
-            }
-        }
-    </script>
-</body>
-</html>
+                            <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required

@@ -56,13 +56,13 @@
             box-shadow: 0 0 20px rgba(162, 136, 255, 0.2);
         }
 
-        .card-img-placeholder {
-            background: #1a1a1e;
+        /* Ditukar daripada div placeholder kepada imej styling */
+        .product-card-img {
             height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            object-fit: cover;
             border-bottom: 1px solid #2e2e32;
+            width: 100%;
+            background: #1a1a1e;
         }
 
         .price-tag { 
@@ -116,16 +116,21 @@
             {% for product in products %}
             <div class="col-lg-3 col-md-4 col-sm-6"> 
                 <div class="product-card">
-                    <div class="card-img-placeholder text-muted">
-                        <span class="text-uppercase fw-bold opacity-25" style="letter-spacing: 2px;">Image</span>
-                    </div>
+                    
+                    {% if product.category and 'book' in product.category.lower() %}
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books">
+                    {% elif product.category and 'tech' in product.category.lower() or 'gadget' in product.category.lower() %}
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}">
+                    {% endif %}
 
                     <div class="p-4 d-flex flex-column flex-grow-1">
                         <div class="mb-3">
                             <span class="badge-category text-uppercase">{{ product.category if product.category else 'General' }}</span>
                         </div>
                         
-                        <h5 class="fw-bold text-white mb-2" style="font-size: 1.1rem;">{{ product.name }}</h5>
+                        <h5 class="fw-bold text-white mb-2 text-truncate" style="font-size: 1.1rem;" title="{{ product.name }}">{{ product.name }}</h5>
                         
                         <p class="price-tag mb-1">RM {{ "%.2f"|format(product.price) }}</p>
                         

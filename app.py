@@ -43,6 +43,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(50))
+    image_url = db.Column(db.String(500))  # Kolom simpan URL gambar produk dari web
     store_id = db.Column(db.Integer, db.ForeignKey('store.id'), nullable=False)
 
 # --- FORMS ---
@@ -148,13 +149,21 @@ def add_product():
         name = request.form.get('name')
         price = request.form.get('price')
         selected_cat = request.form.get('category_select')
+        image_url = request.form.get('image_url')  # Tangkap input 'image_url' dari form HTML
         
         if selected_cat == 'Others':
             category = request.form.get('other_category')
         else:
             category = selected_cat
 
-        new_product = Product(name=name, price=float(price), category=category, store_id=user_store.id)
+        # Memasukkan data imej ke dalam database bersama produk baru
+        new_product = Product(
+            name=name, 
+            price=float(price), 
+            category=category, 
+            image_url=image_url,  # Simpan ke database
+            store_id=user_store.id
+        )
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('my_store'))

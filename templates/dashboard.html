@@ -71,6 +71,12 @@
             transition: 0.3s;
         }
 
+        .btn-register:hover {
+            background-color: #e2e2e2;
+            transform: translateY(-3px);
+            color: #000000;
+        }
+
         .btn-my-store {
             background-color: #28a745;
             color: white;
@@ -93,6 +99,12 @@
             border-radius: 10px;
             transition: 0.2s;
         }
+        
+        .btn-logout:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ff4a4a;
+            border-color: #ff4a4a;
+        }
 
         .nav-link-custom {
             color: rgba(255, 255, 255, 0.7);
@@ -102,6 +114,20 @@
             transition: 0.2s;
             display: inline-block;
         }
+
+        .nav-link-custom:hover {
+            color: #ffffff;
+        }
+
+        .btn-marketplace {
+            border-radius: 12px; 
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-marketplace:hover {
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -110,9 +136,11 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">MMU EXCHANGE</a>
+            <a class="navbar-brand" href="{{ url_for('home') }}">MMU EXCHANGE</a>
             <div class="ms-auto d-flex align-items-center gap-4">
-                <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
+                {% if current_user.store %}
+                    <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
+                {% endif %}
                 <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>
@@ -123,7 +151,7 @@
             <div class="col-md-8 text-center">
                 <div class="card welcome-card">
                     <div class="card-body p-5">
-                        <h1 class="display-4 mb-3">Welcome Back!</h1>
+                        <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
                         <p class="lead text-muted-custom mb-5">You are successfully logged in. Ready to manage your business at MMU?</p>
                         
                         <div class="d-flex flex-column align-items-center gap-3">
@@ -134,20 +162,23 @@
                                         🏠 Go to My Store
                                     </a>
                                 {% else %}
-                                    <a href="{{ url_for('registerstore') }}" class="btn btn-register btn-lg px-5">
+                                    <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
                                         + Register Your Store
                                     </a>
                                 {% endif %}
 
-                                <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-lg px-5" style="border-radius: 12px; font-weight: 600;">
+                                <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
                                     View Marketplace
-                                </a>
+                                </a >
                             </div>
 
-                            <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
-                            <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
-                                + Add New Product to Store
-                            </a>
+                            {# Hanya tunjuk pautan tambah produk jika user sudah mempunyai kedai terdaftar #}
+                            {% if current_user.store %}
+                                <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
+                                <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
+                                    + Add New Product to Store
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -155,6 +186,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src=""https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
