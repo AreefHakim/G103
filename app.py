@@ -102,6 +102,10 @@ def register():
 
     return render_template('register.html', form=form)
 
+@app.route('/forgotpassword')
+def forgotpassword():
+    return "Forgot Password Page"
+
 #CRUD (CREATE, READ, UPDATE, DELETE)
 
 @app.route('/api/store/register', methods=['POST'])                                     #CREATE - Store registration JSON
