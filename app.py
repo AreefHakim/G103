@@ -78,10 +78,11 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-@app.route('/dashboard', methods={'GET', 'POST'})
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    user_stores = Store.query.filter_by(owner_id=current_user.id).all()
+    return render_template('dashboard.html', username=current_user.username, stores=user_stores)
 
 @app.route('/logout', methods={'GET', 'POST'})
 @login_required
@@ -157,7 +158,7 @@ def register_store_page():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('register_store.html')
+    return render_template('registerstore.html')
 
 @app.route('/stores', methods=['GET'])                                                        #READ - View all stores
 @login_required
