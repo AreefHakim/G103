@@ -105,7 +105,7 @@ def register():
 
 @app.route('/forgotpassword')
 def forgotpassword():
-    return "Forgot Password Page"
+    return render_template('forgotpassword.html')
 
 #CRUD (CREATE, READ, UPDATE, DELETE)
 
