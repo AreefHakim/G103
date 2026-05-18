@@ -52,7 +52,7 @@ class RegisterForm(FlaskForm):
         
 class LoginForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
-    
+
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Password"})
     
     submit = SubmitField("Login")
@@ -74,11 +74,11 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/dashboard')
 @login_required
 def dashboard():
-    user_stores = Store.query.filter_by(owner_id=current_user.id).all()
-    return render_template('dashboard.html', username=current_user.username, stores=user_stores)
+    user_store = Store.query.filter_by(user_id=current_user.id).first()
+    return render_template('dashboard.html', username=current_user.username, store=user_store)
 
 @app.route('/logout',methods=['GET', 'POST'])
 @login_required
