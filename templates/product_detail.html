@@ -24,7 +24,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* STYLING BARU: Untuk ruangan gambar produk */
         .detail-img-container {
             width: 100%;
             height: 100%;
@@ -49,9 +48,8 @@
             text-shadow: 0 0 15px rgba(162, 136, 255, 0.3);
         }
 
-        /* Ini fix untuk tulisan yang tak nampak tadi */
         .description-text {
-            color: rgba(255, 255, 255, 0.85); /* Warna putih terang tapi soft */
+            color: rgba(255, 255, 255, 0.85); 
             line-height: 1.8;
             font-size: 1.1rem;
         }
@@ -71,6 +69,7 @@
             border-radius: 12px;
             font-weight: 700;
             transition: 0.3s;
+            text-decoration: none;
         }
 
         .btn-chat:hover {
@@ -88,6 +87,63 @@
         .back-link:hover {
             color: #ffffff;
         }
+
+        .danger-zone {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        /* --- STYLING BARU: RATING SYSTEM UI --- */
+        .rating-container {
+            background: #18181f;
+            border: 1px solid #2e2e32;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 6px;
+            font-size: 2rem;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            color: #2e2e32;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.1s ease;
+        }
+
+        /* Hover dan Select effect menggunakan Unicode bintang */
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffca28; /* Kuning Emas */
+        }
+
+        .star-rating label:active {
+            transform: scale(0.9);
+        }
+
+        .submit-rating-btn {
+            background-color: #a288ff;
+            color: #0b0b0f;
+            border: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .submit-rating-btn:hover {
+            background-color: #8c6eff;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(162, 136, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -96,7 +152,7 @@
             <div class="col-lg-10">
                 
                 <a href="{{ url_for('products') }}" class="back-link mb-4 d-inline-block">
-                    ← Back to Marketplace
+                    &larr; Back to Marketplace
                 </a>
                 
                 <div class="detail-card">
@@ -144,11 +200,65 @@
                                 </p>
                             </div>
                             
-                            <div class="mt-4">
-                                <button class="btn btn-chat btn-lg w-100 text-white">
-                                    Chat with Seller
-                                </button>
+                            <div class="mt-2">
+                                {% if product.store and product.store.phone_number %}
+                                    <a href="https://wa.me/6{{ product.store.phone_number }}?text=Hi, I am interested in your product: {{ product.name }} (RM {{ '%.2f'|format(product.price) }})" target="_blank" class="btn btn-chat btn-lg w-100 text-white text-center d-block">
+                                        💬 Chat with Seller via WhatsApp
+                                    </a>
+                                {% else %}
+                                    <a href="https://wa.me/60123456789?text=Hi, I am interested in your product: {{ product.name }}" target="_blank" class="btn btn-chat btn-lg w-100 text-white text-center d-block">
+                                        💬 Chat with Seller (Demo)
+                                    </a>
+                                {% endif %}
                             </div>
+
+                            <div class="rating-container mt-4">
+                                <h5 class="fw-bold text-white mb-1" style="font-size: 1.1rem;">Rate This Product</h5>
+                                <p class="small text-white-50 mb-3">Share your feedback with the campus community.</p>
+                                
+                                <form id="feedbackForm">
+                                    <div class="star-rating mb-3">
+                                        <input type="radio" id="star5" name="rating" value="5">
+                                        <label for="star5" title="5 stars">★</label>
+                                        
+                                        <input type="radio" id="star4" name="rating" value="4">
+                                        <label for="star4" title="4 stars">★</label>
+                                        
+                                        <input type="radio" id="star3" name="rating" value="3">
+                                        <label for="star3" title="3 stars">★</label>
+                                        
+                                        <input type="radio" id="star2" name="rating" value="2">
+                                        <label for="star2" title="2 stars">★</label>
+                                        
+                                        <input type="radio" id="star1" name="rating" value="1">
+                                        <label for="star1" title="1 star">★</label>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <textarea id="feedbackComment" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Write a brief review (optional)..." style="border-radius: 10px; resize: none; font-size: 0.95rem;"></textarea>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn submit-rating-btn py-25" style="border-radius: 10px;">Submit Review</button>
+                                    </div>
+                                </form>
+                                
+                                <div id="successMessage" class="alert alert-success mt-3 d-none" role="alert" style="border-radius: 10px; background-color: rgba(40, 167, 69, 0.15); color: #2de25c; border-color: rgba(40, 167, 69, 0.25);">
+                                    ✓ Thank you! Your review has been logged (Frontend Simulation).
+                                </div>
+                            </div>
+
+                            {% if current_user.is_authenticated and current_user.store and product.store_id == current_user.store.id %}
+                                <div class="danger-zone">
+                                    <p class="text-danger small mb-2" style="font-weight: 600; letter-spacing: 0.05em;">PRODUCT MANAGEMENT</p>
+                                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this product from your shop? This process cannot be undone.');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-2" style="border-radius: 12px; font-weight: 600;">
+                                            🗑️ Delete This Product Permanently
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+
                         </div>
 
                     </div>
@@ -160,5 +270,40 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            const successMessage = document.getElementById('successMessage');
+
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Menghentikan form daripada refresh page
+                    
+                    const selectedRating = document.querySelector('input[name="rating"]:checked');
+                    const commentText = document.getElementById('feedbackComment').value.trim();
+                    
+                    if (!selectedRating) {
+                        alert('Please select at least one star before submitting your review!');
+                        return;
+                    }
+
+                    // Menunjukkan data telah sedia ditangkap untuk kegunaan API Backend kelak
+                    console.log("=== Rating UI Captured ===");
+                    console.log("Product ID Context: {{ product.id }}");
+                    console.log("Stars Selected:", selectedRating.value);
+                    console.log("Review Comment:", commentText);
+
+                    // Paparkan mesej animasi berjaya
+                    feedbackForm.reset();
+                    successMessage.classList.remove('d-none');
+                    
+                    setTimeout(() => {
+                        successMessage.classList.add('d-none');
+                    }, 4000);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

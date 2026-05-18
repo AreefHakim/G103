@@ -37,6 +37,50 @@
             box-shadow: 0 0 15px rgba(90, 71, 207, 0.4);
         }
 
+        /* --- STYLING BARU: SEARCH & FILTER --- */
+        .search-control {
+            background-color: #121217 !important;
+            border: 1px solid #2e2e32 !important;
+            color: #ffffff !important;
+            padding: 14px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .search-control:focus {
+            border-color: #a288ff !important;
+            box-shadow: 0 0 15px rgba(162, 136, 255, 0.15);
+            outline: none;
+        }
+
+        .search-control::placeholder {
+            color: #55555c;
+        }
+
+        .filter-btn {
+            border: 1px solid #2e2e32;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #a288ff;
+            color: #ffffff;
+            background: rgba(162, 136, 255, 0.05);
+        }
+
+        .filter-btn.active {
+            background: #a288ff !important;
+            border-color: #a288ff !important;
+            color: #0b0b0f !important;
+            box-shadow: 0 0 15px rgba(162, 136, 255, 0.3);
+        }
+
         /* Card Style */
         .product-card {
             background: #121217;
@@ -56,7 +100,6 @@
             box-shadow: 0 0 20px rgba(162, 136, 255, 0.2);
         }
 
-        /* Ditukar daripada div placeholder kepada imej styling */
         .product-card-img {
             height: 200px;
             object-fit: cover;
@@ -112,17 +155,37 @@
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8 text-center">
+                <input type="text" id="searchBar" class="form-control search-control mb-3" placeholder="Search products by name...">
+                
+                <div class="d-flex flex-wrap gap-2 justify-content-center" id="categoryFilters">
+                    <button class="filter-btn active" data-category="all">All Items</button>
+                    <button class="filter-btn" data-category="Electronics">Electronics</button>
+                    <button class="filter-btn" data-category="Books">Books</button>
+                    <button class="filter-btn" data-category="Clothing">Clothing</button>
+                    <button class="filter-btn" data-category="Others">Others</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="productGrid">
             {% for product in products %}
-            <div class="col-lg-3 col-md-4 col-sm-6"> 
+            <div class="col-lg-3 col-md-4 col-sm-6 product-item-wrapper" 
+                 data-name="{{ product.name | lower }}" 
+                 data-category="{{ product.category if product.category else 'General' }}"> 
+                
                 <div class="product-card">
-                    
-                    {% if product.category and 'book' in product.category.lower() %}
-                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books">
-                    {% elif product.category and 'tech' in product.category.lower() or 'gadget' in product.category.lower() %}
-                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="product-card-img" alt="{{ product.name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60';">
                     {% else %}
-                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}">
+                        {% if product.category and 'book' in product.category.lower() %}
+                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books">
+                        {% elif product.category and ('tech' in product.category.lower() or 'gadget' in product.category.lower()) %}
+                            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}">
+                        {% endif %}
                     {% endif %}
 
                     <div class="p-4 d-flex flex-column flex-grow-1">
@@ -147,7 +210,7 @@
                 </div>
             </div>
             {% else %}
-            <div class="col-12 text-center py-5 empty-state">
+            <div class="col-12 text-center py-5 empty-state" id="emptyState">
                 <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
                     <h3>No products listed yet.</h3>
                     <p>Be the first one to start selling!</p>
@@ -157,8 +220,71 @@
                 </div>
             </div>
             {% endfor %}
+            
+            <div class="col-12 text-center py-5 empty-state d-none" id="noResultsState">
+                <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
+                    <h3>No products found.</h3>
+                    <p>Try searching for a different item name or select another category.</p>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBar = document.getElementById('searchBar');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const productItems = document.querySelectorAll('.product-item-wrapper');
+            const noResultsState = document.getElementById('noResultsState');
+
+            let currentCategory = 'all';
+            let searchQuery = '';
+
+            function filterProducts() {
+                let visibleCount = 0;
+
+                productItems.forEach(item => {
+                    const productName = item.getAttribute('data-name');
+                    const productCategory = item.getAttribute('data-category');
+
+                    const matchesSearch = productName.includes(searchQuery);
+                    const matchesCategory = (currentCategory === 'all') || (productCategory === currentCategory);
+
+                    if (matchesSearch && matchesCategory) {
+                        item.classList.remove('d-none');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // Paparkan 'No products found' jika senarai kosong selepas ditapis
+                if (productItems.length > 0) {
+                    if (visibleCount === 0) {
+                        noResultsState.classList.remove('d-none');
+                    } else {
+                        noResultsState.classList.add('d-none');
+                    }
+                }
+            }
+
+            // Logik menaip pada Search Bar
+            searchBar.addEventListener('input', function(e) {
+                searchQuery = e.target.value.toLowerCase().trim();
+                filterProducts();
+            });
+
+            // Logik klik pada Butang Kategori
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    currentCategory = this.getAttribute('data-category');
+                    filterProducts();
+                });
+            });
+        });
+    </script>
 </body>
 </html>

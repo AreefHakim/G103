@@ -35,6 +35,8 @@ class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500))
+    # PERUBAHAN 1: Ditambah column phone_number untuk link WhatsApp
+    phone_number = db.Column(db.String(20), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     products = db.relationship('Product', backref='store', lazy=True)
 
@@ -43,7 +45,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(50))
-    image_url = db.Column(db.String(500))  # Kolom simpan URL gambar produk dari web
+    image_url = db.Column(db.String(500))  # Column storing product image URLs
     store_id = db.Column(db.Integer, db.ForeignKey('store.id'), nullable=False)
 
 # --- FORMS ---
@@ -56,7 +58,7 @@ class RegisterForm(FlaskForm):
     def validate_username(self, username):
         existing_user_username = User.query.filter_by(username=username.data).first()
         if existing_user_username:
-            raise ValidationError('Username sudah wujud.')
+            raise ValidationError('Username already exists.')
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -114,7 +116,22 @@ def register_store():
     if request.method == 'POST':
         store_name = request.form.get('store_name')
         description = request.form.get('description')
-        new_store = Store(name=store_name, description=description, owner=current_user)
+        raw_phone = request.form.get('phone_number')
+        
+        # PERUBAHAN 2: Proses pembersihan input nombor telefon
+        phone_number = None
+        if raw_phone:
+            # Buang sebarang simbol dash, jarak kosong, atau simbol tambah
+            cleaned_phone = raw_phone.strip().replace('-', '').replace(' ', '').replace('+', '')
+            
+            # Buang kod negara jika user terasimilasi masukkan (cth: '6012...' atau '60012...')
+            if cleaned_phone.startswith('60'):
+                cleaned_phone = cleaned_phone[2:]
+            
+            phone_number = cleaned_phone
+
+        # Simpan objek kedai baharu bersama nombor telefon
+        new_store = Store(name=store_name, description=description, phone_number=phone_number, owner=current_user)
         db.session.add(new_store)
         db.session.commit()
         return redirect(url_for('my_store'))
@@ -149,19 +166,18 @@ def add_product():
         name = request.form.get('name')
         price = request.form.get('price')
         selected_cat = request.form.get('category_select')
-        image_url = request.form.get('image_url')  # Tangkap input 'image_url' dari form HTML
+        image_url = request.form.get('image_url')
         
         if selected_cat == 'Others':
             category = request.form.get('other_category')
         else:
             category = selected_cat
 
-        # Memasukkan data imej ke dalam database bersama produk baru
         new_product = Product(
             name=name, 
             price=float(price), 
             category=category, 
-            image_url=image_url,  # Simpan ke database
+            image_url=image_url, 
             store_id=user_store.id
         )
         db.session.add(new_product)
@@ -180,6 +196,19 @@ def view_product(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template('product_detail.html', product=product)
 
+@app.route('/delete-product/<int:product_id>', methods=['POST'])
+@login_required
+def delete_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    
+    # Check if the product belongs to the store of the current logged-in user
+    if current_user.store and product.store_id == current_user.store.id:
+        db.session.delete(product)
+        db.session.commit()
+        return redirect(url_for('my_store'))
+    else:
+        return jsonify({"error": "Unauthorized action"}), 403
+
 # --- API ROUTES (FOR BACKEND TEAM) ---
 
 @app.route('/api/store/register', methods=['POST'])
@@ -187,10 +216,25 @@ def view_product(product_id):
 def api_register_store():
     data = request.get_json()
     store_name = data.get('store_name')
+    raw_phone = data.get('phone_number')
+    
     if not store_name:
         return jsonify({"error": "Store name is required"}), 400
     
-    new_store = Store(name=store_name, description=data.get('description'), user_id=current_user.id)
+    # Pembersihan nombor telefon untuk API endpoint juga
+    phone_number = None
+    if raw_phone:
+        cleaned_phone = str(raw_phone).strip().replace('-', '').replace(' ', '').replace('+', '')
+        if cleaned_phone.startswith('60'):
+            cleaned_phone = cleaned_phone[2:]
+        phone_number = cleaned_phone
+    
+    new_store = Store(
+        name=store_name, 
+        description=data.get('description'), 
+        phone_number=phone_number, 
+        user_id=current_user.id
+    )
     db.session.add(new_store)
     db.session.commit()
     return jsonify({"message": "Store registered successfully"}), 201
