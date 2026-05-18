@@ -74,11 +74,11 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    user_store = Store.query.filter_by(user_id=current_user.id).first()
-    return render_template('dashboard.html', username=current_user.username, store=user_store)
+    user_stores = Store.query.filter_by(owner_id=current_user.id).all() 
+    return render_template('dashboard.html', username=current_user.username, stores=user_stores)
 
 @app.route('/logout',methods=['GET', 'POST'])
 @login_required
