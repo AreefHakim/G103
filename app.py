@@ -67,7 +67,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/login', methods={'GET', 'POST'})
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -84,18 +84,18 @@ def dashboard():
     user_stores = Store.query.filter_by(owner_id=current_user.id).all()
     return render_template('dashboard.html', username=current_user.username, stores=user_stores)
 
-@app.route('/logout', methods={'GET', 'POST'})
+@app.route('/logout',methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/register', methods={'GET', 'POST'})
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
 
-    if form.validate_on_submit():                                                      # whenever we submit this form, we immediately create a hashed version of the password
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
+    if form.validate_on_submit():                                                               # whenever we submit this form, we immediately create a hashed version of the password
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')     # decode('utf-8') to convert the generated hash into a clean text string before creating user object
         new_user = User(username=form.username.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
