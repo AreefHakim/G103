@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>Login - MMU EXCHANGE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -118,69 +117,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-=======
-    <title>Login - Project</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; display: flex; align-items: center; height: 100vh; }
-        .login-card { max-width: 400px; width: 100%; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white; }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <h2 class="text-center mb-4">Login Page</h2>
-        
-        <form method="POST" action="" class="needs-validation" novalidate>
-            {{ form.hidden_tag() }}
-            
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                {{ form.username(class="form-control", placeholder="Enter username", required=True) }}
-                <div class="invalid-feedback">Please enter your username.</div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                {{ form.password(class="form-control", placeholder="Enter password", required=True) }}
-                <div class="invalid-feedback">Password is required.</div>
-            </div>
-
-            <div class="d-grid gap-2">
-                {{ form.submit(class="btn btn-primary") }}
-            </div>
-        </form>
-
-        <div class="text-center mt-3">
-            <small><a href="{{ url_for('forgotpassword') }}" class="text-muted text-decoration-none">Forgot Password?</a></small>
-            <hr class="my-2"> 
-            <small>Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a></small>
-        </div>
-    </div>
-
-    <script>
-        (function () {
-            'use strict'
-
-            // Get all forms with 'needs-validation' class
-            var forms = document.querySelectorAll('.needs-validation')
-
-            // Loop through each form
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        
-                        // If form is invalid, stop the submission
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-
-                        // Add class to show red/green status
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
-    </script>
-    </body>
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 </html>
