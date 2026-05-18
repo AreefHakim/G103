@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 from flask import Flask, render_template, url_for, redirect, request, jsonify
-=======
-from flask import Flask, render_template, url_for, redirect, request
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -12,10 +8,7 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 
-<<<<<<< HEAD
 # --- CONFIGURATION ---
-=======
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 
@@ -30,11 +23,8 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-<<<<<<< HEAD
 # --- DATABASE MODELS ---
 
-=======
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
@@ -45,7 +35,6 @@ class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500))
-    # PERUBAHAN 1: Ditambah column phone_number untuk link WhatsApp
     phone_number = db.Column(db.String(20), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     products = db.relationship('Product', backref='store', lazy=True)
@@ -68,21 +57,14 @@ class RegisterForm(FlaskForm):
     def validate_username(self, username):
         existing_user_username = User.query.filter_by(username=username.data).first()
         if existing_user_username:
-<<<<<<< HEAD
             raise ValidationError('Username already exists.')
-=======
-            raise ValidationError('That username already exists. Please choose a different one.')
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
     password = PasswordField(validators=[InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField('Login')
-<<<<<<< HEAD
 
 # --- ROUTES ---
-=======
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 
 @app.route('/')
 def home():
@@ -99,16 +81,11 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-<<<<<<< HEAD
 @app.route('/dashboard')
-=======
-@app.route('/dashboard', methods=['GET', 'POST'])
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 @login_required
 def dashboard():
     return render_template('dashboard.html')
 
-<<<<<<< HEAD
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -121,15 +98,11 @@ def register():
     return render_template('register.html', form=form)
 
 @app.route('/logout')
-=======
-@app.route('/logout', methods=['GET', 'POST'])
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-<<<<<<< HEAD
 @app.route('/forgot-password')
 def forgotpassword():
     return render_template('forgotpassword.html')
@@ -144,19 +117,15 @@ def register_store():
         description = request.form.get('description')
         raw_phone = request.form.get('phone_number')
         
-        # PERUBAHAN 2: Proses pembersihan input nombor telefon
         phone_number = None
         if raw_phone:
-            # Buang sebarang simbol dash, jarak kosong, atau simbol tambah
             cleaned_phone = raw_phone.strip().replace('-', '').replace(' ', '').replace('+', '')
             
-            # Buang kod negara jika user terasimilasi masukkan (cth: '6012...' atau '60012...')
             if cleaned_phone.startswith('60'):
                 cleaned_phone = cleaned_phone[2:]
             
             phone_number = cleaned_phone
 
-        # Simpan objek kedai baharu bersama nombor telefon
         new_store = Store(name=store_name, description=description, phone_number=phone_number, owner=current_user)
         db.session.add(new_store)
         db.session.commit()
@@ -247,7 +216,6 @@ def api_register_store():
     if not store_name:
         return jsonify({"error": "Store name is required"}), 400
     
-    # Pembersihan nombor telefon untuk API endpoint juga
     phone_number = None
     if raw_phone:
         cleaned_phone = str(raw_phone).strip().replace('-', '').replace(' ', '').replace('+', '')
@@ -269,32 +237,3 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-=======
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        new_user = User(username=form.username.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login'))
-    return render_template('register.html', form=form)
-
-@app.route('/forgot-password')
-def forgotpassword():
-    return render_template('forgotpassword.html')
-
-# --- TAMBAHAN ROUTE REGISTER STORE DI SINI ---
-@app.route('/register-store', methods=['GET', 'POST'])
-@login_required
-def registerstore():
-    if request.method == 'POST':
-        # Sini nanti kawan awak akan tambah kod untuk simpan data store ke database
-        return redirect(url_for('dashboard'))
-    return render_template('registerstore.html')
-# --------------------------------------------
-
-if __name__ == "__main__":
-    app.run(debug=True)
->>>>>>> daddb1cb35b758b2f600d43373a25eb9fb319bca
