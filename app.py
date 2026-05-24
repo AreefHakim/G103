@@ -265,26 +265,25 @@ def view_product(product_id):
     return render_template('product_detail.html',product=product)               #display one product page
 
 
-@app.route('/delete-product/<int:product_id>', methods=['POST'])                #delete product
+@app.route('/delete-product/<int:product_id>', methods=['POST'])             #delete product (I dont use 'GET' for this to prevent accidental deletion and flask project commonly use post for delete routes)
 @login_required
 def delete_product(product_id):
 
-    product = Product.query.get_or_404(
-        product_id
-    )
+    product = Product.query.get_or_404(product_id)                         
 
-    # Better authorization protection
     if current_user.store and \
-       product.store_id == current_user.store.id:
+       product.store_id == current_user.store.id:                               #security check: check if this product belongs to current user (without this, any user can delete the product)
 
         db.session.delete(product)
-        db.session.commit()
+        db.session.commit()                                                     #removes product permanently 
 
         return redirect(url_for('my_store'))
 
     return jsonify({
         "error": "Unauthorized action"
-    }), 403
+    }), 403                                                                      #user is not allow to do this action
+
+
 
 
 if __name__ == '__main__':
