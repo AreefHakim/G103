@@ -205,52 +205,87 @@ def delete_store():
 
 #Product routes
 
-@app.route('/store/update/<int:store_id>', methods=['PUT'])                                    #UPDATE - Edit store
+@app.route('/add-product', methods=['GET', 'POST'])                                       #displaying product form and submitting product data
 @login_required
-def update_store(store_id):
+def add_product():
 
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
+    user_store = Store.query.filter_by(user_id=current_user.id).first()                                 
 
-    if not store:
-        return jsonify({"error": "Store not found"}), 404
+    if not user_store:
+        return redirect(url_for('register_store'))
 
-    data = request.get_json()
+    if request.method == 'POST':
 
-    store.store_name = data.get('store_name', store.store_name)
-    store.description = data.get('description', store.description)
+        name = request.form.get('name')
+        price = request.form.get('price')
 
-    db.session.commit()
+        selected_cat = request.form.get('category_select')                                  #select category from dropdown menu
+
+        image_url = request.form.get('image_url')
+
+        if selected_cat == 'Others':                                                     #custom type of category
+            category = request.form.get(
+                'other_category'
+            )
+        else:
+            category = selected_cat
+
+        new_product = Product(
+            name=name,
+            price=float(price),
+            category=category,
+            image_url=image_url,
+            store_id=user_store.id                                                            #connects product to store owner
+        )
+
+        db.session.add(new_product)                                                              
+        db.session.commit()                                                                 #saves into database
+
+        return redirect(url_for('my_store'))
+
+    return render_template('add_product.html')
+
+
+@app.route('/products')
+def products():
+
+    all_products = Product.query.all()
+
+    return render_template(
+        'products.html',
+        products=all_products
+    )
+
+
+@app.route('/view-product/<int:product_id>')                                      #view single product
+def view_product(product_id):
+
+    product = Product.query.get_or_404(product_id)                             #find product, if doesnt exists = 404 page
+
+    return render_template('product_detail.html',product=product)               #display one product page
+
+
+@app.route('/delete-product/<int:product_id>', methods=['POST'])                #delete product
+@login_required
+def delete_product(product_id):
+
+    product = Product.query.get_or_404(
+        product_id
+    )
+
+    # Better authorization protection
+    if current_user.store and \
+       product.store_id == current_user.store.id:
+
+        db.session.delete(product)
+        db.session.commit()
+
+        return redirect(url_for('my_store'))
 
     return jsonify({
-        "message": "Store updated successfully",
-        "store": {
-            "id": store.id,
-            "store_name": store.store_name,
-            "description": store.description
-        }
-    })
+        "error": "Unauthorized action"
+    }), 403
 
-@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                                #DELETE - Delete store
-@login_required
-def delete_store(store_id):
-
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
-
-    if not store:
-        return jsonify({"error": "Store not found"}), 404
-
-    db.session.delete(store)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store deleted successfully"
-    })
 
 if __name__ == '__main__':
     with app.app_context():
