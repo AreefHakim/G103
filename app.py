@@ -31,12 +31,17 @@ class User(db.Model, UserMixin):
                                                                                              
     password = db.Column(db.String(80), nullable=False)
     
-    store = db.relationship('Store',backref='owner',uselist=False)                            #store relationship
+    store = db.relationship('Store',backref='owner',uselist=False)                            #store relationship (User -> Store)
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    store_name = db.Column(db.String(100), nullable=False)
+
+    name = db.Column(db.String(100), nullable=False)
+
     description = db.Column(db.String(200))
+
+    phone_number = db.Column(db.String(20),nullable=True)                                     #Phone number support
+
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class RegisterForm(FlaskForm):
