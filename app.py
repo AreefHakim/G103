@@ -143,56 +143,39 @@ def forgotpassword():
 
 #CRUD (CREATE, READ, UPDATE, DELETE)
 
-@app.route('/api/store/register', methods=['POST'])                                     #CREATE - Store registration JSON
+@app.route('/register-store', methods=['GET', 'POST'])                                                                        #combined both api and html for store registration 
 @login_required
 def register_store():
-    data = request.get_json()
 
-    store_name = data.get('store_name')
-    description = data.get('description')
-
-    if not store_name:
-        return jsonify({"error": "Store name is required"}), 400
-
-    new_store = Store(
-        store_name=store_name,
-        description=description,
-        owner_id=current_user.id
-    )
-
-    db.session.add(new_store)
-    db.session.commit()
-
-    return jsonify({
-        "message": "Store registered successfully",
-        "store": {
-            "id": new_store.id,
-            "store_name": new_store.store_name
-        }
-    }), 201
-
-@app.route('/store/register', methods=['GET', 'POST'])                                      #CREATE - Store registration for html
-@login_required
-def register_store_page():
     if request.method == 'POST':
+
         store_name = request.form.get('store_name')
         description = request.form.get('description')
+        raw_phone = request.form.get('phone_number')
 
-        if not store_name:
-            return "Store name is required"
+        phone_number = None
 
-        new_store = Store(
-            store_name=store_name,
-            description=description,
-            owner_id=current_user.id
-        )
+        if raw_phone:
+
+            cleaned_phone = raw_phone.strip() \
+                .replace('-', '') \
+                .replace(' ', '') \
+                .replace('+', '')
+
+            if cleaned_phone.startswith('60'):
+                cleaned_phone = cleaned_phone[2:]                                                            #automatically formats malaysian phone numbers
+
+            phone_number = cleaned_phone
+
+        new_store = Store(name=store_name, description=description,phone_number=phone_number,owner=current_user)
 
         db.session.add(new_store)
         db.session.commit()
 
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('my_store'))
 
     return render_template('registerstore.html')
+
 
 @app.route('/stores', methods=['GET'])                                                        #READ - View all stores
 @login_required
