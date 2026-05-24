@@ -42,7 +42,9 @@ class Store(db.Model):
 
     phone_number = db.Column(db.String(20),nullable=True)                                     #Phone number support
 
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    products = db.relationship('Product',backref='store',lazy=True)                           #store relationship (Store -> Products)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
