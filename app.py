@@ -115,7 +115,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    user_stores = Store.query.filter_by(owner_id=current_user.id).all() 
+    user_stores = Store.query.filter_by(user_id=current_user.id).all() 
     return render_template('dashboard.html', username=current_user.username, stores=user_stores)
 
 @app.route('/logout',methods=['GET', 'POST'])
