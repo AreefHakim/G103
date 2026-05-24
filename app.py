@@ -283,7 +283,134 @@ def delete_product(product_id):
         "error": "Unauthorized action"
     }), 403                                                                      #user is not allow to do this action
 
+#CRUD (CREATE, READ, UPDATE, DELETE) API
 
+@app.route('/api/store/register', methods=['POST'])                            #CREATE store api 
+@login_required
+def api_register_store():
+
+    data = request.get_json()
+
+    store_name = data.get('store_name')
+    raw_phone = data.get('phone_number')
+
+    if not store_name:                                                      #validation check
+        return jsonify({
+            "error": "Store name is required" 
+        }), 400                                                               #bad request: user sent invalid data
+ 
+    phone_number = None
+
+    if raw_phone:                                                            #only run if there's a phone number provided 
+
+        cleaned_phone = str(raw_phone).strip() \
+            .replace('-', '') \
+            .replace(' ', '') \
+            .replace('+', '')                                                   #convert to string | .strip() used for removing spaces at beginning/end
+
+        if cleaned_phone.startswith('60'):                                   #remove '60' at the start of the phone number 
+            cleaned_phone = cleaned_phone[2:]
+
+        phone_number = cleaned_phone
+
+    new_store = Store(name=store_name,description=data.get('description'),phone_number=phone_number,user_id=current_user.id)        #connects store to logged in user
+
+    db.session.add(new_store)                                 #save to database
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store registered successfully",
+        "store": {
+            "id": new_store.id,
+            "name": new_store.name
+        }
+    }), 201                                                    # 201 means: new resource successfully created
+
+
+@app.route('/stores', methods=['GET'])                                          #READ all stores                             #only reads data
+@login_required
+def get_stores():
+
+    stores = Store.query.filter_by(user_id=current_user.id).all()                 #Finds all stores owned by current user 
+
+    store_list = []
+
+    for store in stores:
+
+        store_list.append({
+            "id": store.id,
+            "name": store.name,
+            "description": store.description,
+            "phone_number": store.phone_number
+        })
+
+    return jsonify(store_list)
+
+
+@app.route('/store/<int:store_id>', methods=['GET'])                    #READ single store                                         #only reads data
+@login_required
+def get_store(store_id):
+
+    store = Store.query.filter_by(id=store_id,user_id=current_user.id).first()               #Find store id that matches url and belongs to current user
+
+    if not store:
+        return jsonify({
+            "error": "Store not found"
+        }), 404
+
+    return jsonify({
+        "id": store.id,
+        "name": store.name,
+        "description": store.description,
+        "phone_number": store.phone_number
+    })
+
+
+@app.route('/store/update/<int:store_id>', methods=['PUT'])             #UPDATE store          #PUT for update data
+@login_required
+def update_store(store_id):
+
+    store = Store.query.filter_by(id=store_id,user_id=current_user.id).first()               #security check: without this, anyone can update other user's store
+
+    if not store:                                                                             #if store doesnt exist or doesnt belong to current user
+        return jsonify({
+            "error": "Store not found"
+        }), 404
+
+    data = request.get_json()                                                        #update data
+
+    store.name = data.get('name',store.name)
+
+    store.description = data.get('description',store.description)
+
+    store.phone_number = data.get('phone_number',store.phone_number)
+
+    db.session.commit()                                                            #save changes
+
+    return jsonify({
+        "message": "Store updated successfully"
+    })
+
+
+@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                    #DELETE store
+@login_required
+def delete_store_api(store_id):
+
+    store = Store.query.filter_by(id=store_id,user_id=current_user.id).first()                #Find store id that matches url and belongs to current user
+
+    if not store:
+        return jsonify({
+            "error": "Store not found"
+        }), 404
+
+    Product.query.filter_by(store_id=store.id).delete()                            #Deletes ALL products in the store 
+
+    db.session.delete(store)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store deleted successfully"
+    })
 
 
 if __name__ == '__main__':
