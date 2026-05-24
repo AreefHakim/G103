@@ -37,8 +37,26 @@
                 
                 <div class="card welcome-card bg-white">
                     <div class="card-body p-5">
-                        <h1 class="display-5 fw-bold text-primary mb-3">Welcome Back!</h1>
-                        <p class="lead text-muted mb-0">Hello, you are successfully logged in to your secure dashboard.</p>
+                        <h1 class="display-5 fw-bold text-primary mb-3">Welcome Back, {{ username }}!</h1>
+                        <p class="lead text-muted mb-4">Hello, you are successfully logged in to your secure dashboard.</p>
+                        
+                        <hr class="my-4">
+
+                        {% if stores %}
+                            <h4 class="mb-3 text-start">Your Store</h4>
+                            {% for store in stores %}
+                                <div class="p-3 bg-light rounded border mb-2 text-start">
+                                    <h5><strong>{{ store.name }}</strong></h5>
+                                    <p class="text-muted small mb-2">{{ store.description }}</p>
+                                    <a href="{{ url_for('my_store') }}" class="btn btn-sm btn-primary">Go to Store Management</a>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="p-4 bg-light rounded border text-center">
+                                <p class="text-muted mb-3">You don't have a store registered yet.</p>
+                                <a href="{{ url_for('register_store') }}" class="btn btn-success">Register Your Store Now</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
