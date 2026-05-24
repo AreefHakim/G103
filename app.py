@@ -26,8 +26,12 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)                                             #identity column for user
+
     username = db.Column(db.String(20), nullable=False, unique=True)                         #both of these fields cant be empty 
+                                                                                             
     password = db.Column(db.String(80), nullable=False)
+    
+    store = db.relationship('Store',backref='owner',uselist=False)                            #store relationship
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
