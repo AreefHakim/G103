@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
                                                                                              
     password = db.Column(db.String(80), nullable=False)
     
-    store = db.relationship('Store',backref='owner',uselist=False)                            #store relationship (User -> Store)
+    store = db.relationship('Store',backref='owner',uselist=False)                            #relationship (User -> Store)
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +44,34 @@ class Store(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    products = db.relationship('Product',backref='store',lazy=True)                           #store relationship (Store -> Products)
+    products = db.relationship('Product',backref='store',lazy=True)                           #relationship (Store -> Products)
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)                                               #creates unique id for every product
+
+    name = db.Column(
+        db.String(100),                                                                        #maximum 100 characters
+        nullable=False                                                                         #cant leave this field empty
+    )
+
+    price = db.Column(
+        db.Float,                                                                               #allow decimal numbers
+        nullable=False
+    )
+
+    category = db.Column(
+        db.String(50)
+    )
+
+    image_url = db.Column(                                                                      #store image links to display images on the website
+        db.String(500)
+    )
+
+    store_id = db.Column(                                                                        #connects Product -> Store
+        db.Integer,
+        db.ForeignKey('store.id'),
+        nullable=False
+    )
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
