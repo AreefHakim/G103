@@ -6,7 +6,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # --- CONFIGURATION ---
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -233,7 +233,7 @@ def api_register_store():
     db.session.commit()
     return jsonify({"message": "Store registered successfully"}), 201
 
-if _name_ == "_main_":
+if __name__== "_main_":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
