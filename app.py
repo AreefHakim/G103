@@ -141,7 +141,7 @@ def register():
 def forgotpassword():
     return render_template('forgotpassword.html')
 
-#CRUD (CREATE, READ, UPDATE, DELETE)
+#store routes
 
 @app.route('/register-store', methods=['GET', 'POST'])                                                                        #combined both api and html for store registration 
 @login_required
@@ -177,40 +177,33 @@ def register_store():
     return render_template('registerstore.html')
 
 
-@app.route('/stores', methods=['GET'])                                                        #READ - View all stores
+@app.route('/my-store')
 @login_required
-def get_stores():
+def my_store():
 
-    stores = Store.query.filter_by(owner_id=current_user.id).all()
-
-    store_list = []
-
-    for store in stores:
-        store_list.append({
-            "id": store.id,
-            "store_name": store.store_name,
-            "description": store.description
-        })
-
-    return jsonify(store_list)
-
-@app.route('/store/<int:store_id>', methods=['GET'])                                           #READ - View single store
-@login_required
-def get_store(store_id):
-
-    store = Store.query.filter_by(
-        id=store_id,
-        owner_id=current_user.id
-    ).first()
+    store = Store.query.filter_by(user_id=current_user.id).first()                              #Find the store owned by this user
 
     if not store:
-        return jsonify({"error": "Store not found"}), 404
+        return redirect(url_for('register_store'))
 
-    return jsonify({
-        "id": store.id,
-        "store_name": store.store_name,
-        "description": store.description
-    })
+    return render_template('mystore.html',store=store)
+
+@app.route('/delete-store', methods=['POST'])
+@login_required
+def delete_store():
+
+    user_store = Store.query.filter_by(user_id=current_user.id).first()
+
+    if user_store:
+
+        Product.query.filter_by(store_id=user_store.id).delete()
+
+        db.session.delete(user_store)
+        db.session.commit()
+
+    return redirect(url_for('dashboard'))
+
+#Product routes
 
 @app.route('/store/update/<int:store_id>', methods=['PUT'])                                    #UPDATE - Edit store
 @login_required
