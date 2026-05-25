@@ -97,19 +97,23 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField("Login")
     
+    
 class ProductView(db.Model):                                           #analytics 
     id = db.Column(db.Integer, primary_key=True)
 
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey('product.id'),
-        nullable=False
-    )
+    product_id = db.Column(db.Integer,db.ForeignKey('product.id'),nullable=False)
 
-    viewed_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow)
+    viewed_at = db.Column(db.DateTime,default=datetime.utcnow)
 
+
+class StoreRating(db.Model):                                               #rating system
+    id = db.Column(db.Integer, primary_key=True)
+
+    rating = db.Column(db.Integer, nullable=False)
+
+    store_id = db.Column(db.Integer,db.ForeignKey('store.id'),nullable=False)
+
+    user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 
 
 @app.route('/')
