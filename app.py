@@ -144,25 +144,7 @@ class Notification(db.Model):                                                   
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 
 
-class StoreRating(db.Model):                                               #rating system
-    id = db.Column(db.Integer, primary_key=True)
 
-    rating = db.Column(db.Integer, nullable=False)
-
-    store_id = db.Column(db.Integer,db.ForeignKey('store.id'),nullable=False)
-
-    user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
-
-class Event(db.Model):                                                      #event system
-    id = db.Column(db.Integer, primary_key=True)
-
-    title = db.Column(db.String(100), nullable=False)
-
-    description = db.Column(db.String(300))
-
-    event_date = db.Column(db.DateTime, nullable=False)
-
-    created_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))
 
 
 @app.route('/')
