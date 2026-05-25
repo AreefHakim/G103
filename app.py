@@ -6,6 +6,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt 
+from datetime import datetime, timedelta
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -95,6 +97,20 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField("Login")
     
+class ProductView(db.Model):                                           #analytics 
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey('product.id'),
+        nullable=False
+    )
+
+    viewed_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow)
+
+
 
 @app.route('/')
 def home():
