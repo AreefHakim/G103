@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import func
 
 app = Flask(__name__)
@@ -97,13 +97,13 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField("Login")
     
-    
+
 class ProductView(db.Model):                                           #analytics 
     id = db.Column(db.Integer, primary_key=True)
 
     product_id = db.Column(db.Integer,db.ForeignKey('product.id'),nullable=False)
 
-    viewed_at = db.Column(db.DateTime,default=datetime.utcnow)
+    viewed_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))
 
 
 class StoreRating(db.Model):                                               #rating system
@@ -114,6 +114,17 @@ class StoreRating(db.Model):                                               #rati
     store_id = db.Column(db.Integer,db.ForeignKey('store.id'),nullable=False)
 
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
+
+class Event(db.Model):                                                      #event system
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(100), nullable=False)
+
+    description = db.Column(db.String(300))
+
+    event_date = db.Column(db.DateTime, nullable=False)
+
+    created_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))
 
 
 @app.route('/')
