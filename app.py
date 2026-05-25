@@ -97,13 +97,51 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField("Login")
     
+class ProductView(db.Model):
 
-class ProductView(db.Model):                                           #analytics 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer,primary_key=True)
 
     product_id = db.Column(db.Integer,db.ForeignKey('product.id'),nullable=False)
 
-    viewed_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))
+    viewed_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))              #prevents deprecated datetime problems    #lambda: run function only when new row is created
+
+class StoreRating(db.Model):                                                                                  #store rating
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    rating = db.Column(db.Integer,nullable=False)
+
+    store_id = db.Column(db.Integer,db.ForeignKey('store.id'),nullable=False)
+
+    user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
+
+
+class Event(db.Model):                                                                                      #event
+
+    id = db.Column(db.Integer,primary_key=True)
+
+    title = db.Column(db.String(100),nullable=False)
+
+    description = db.Column(db.String(300))
+
+    event_date = db.Column(db.DateTime(timezone=True),nullable=False)
+
+    created_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))                 
+
+
+class Notification(db.Model):                                                                                  #notification 
+                      
+    id = db.Column(db.Integer,primary_key=True)
+
+    message = db.Column(db.String(300),nullable=False)
+                                                                                                                     
+    is_read = db.Column(                                                                                        #read/unread status
+        db.Boolean,
+        default=False)                                                                                   #notification still unread
+
+    created_at = db.Column(db.DateTime(timezone=True),default=lambda: datetime.now(timezone.utc))
+
+    user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 
 
 class StoreRating(db.Model):                                               #rating system
@@ -146,8 +184,53 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    user_stores = Store.query.filter_by(user_id=current_user.id).all() 
-    return render_template('dashboard.html', username=current_user.username, stores=user_stores)
+
+    user_stores = Store.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+   
+    top_rated_stores = db.session.query(                                           # Top Rated Stores
+        Store.name,
+        func.avg(StoreRating.rating).label('avg_rating')
+    ).join(
+        StoreRating,
+        Store.id == StoreRating.store_id
+    ).group_by(
+        Store.id
+    ).order_by(
+        func.avg(StoreRating.rating).desc()
+    ).limit(5).all()
+
+                      
+    most_viewed_products = db.session.query(                                        # Most Viewed Products
+        Product.name,
+        func.count(ProductView.id).label('views')
+    ).join(
+        ProductView,
+        Product.id == ProductView.product_id
+    ).group_by(
+        Product.id
+    ).order_by(
+        func.count(ProductView.id).desc()
+    ).limit(5).all()
+
+    
+    upcoming_events = Event.query.filter(Event.event_date >= datetime.now(timezone.utc)).order_by(Event.event_date.asc()).all()                       # Upcoming Events
+
+
+    notifications = Notification.query.filter_by(user_id=current_user.id,is_read=False).all()                            # Notifications
+
+    return render_template(
+        'dashboard.html',
+        username=current_user.username,
+        stores=user_stores,
+        top_rated_stores=top_rated_stores,
+        most_viewed_products=most_viewed_products,
+        upcoming_events=upcoming_events,
+        notifications=notifications
+    )
+
 
 @app.route('/logout',methods=['GET', 'POST'])
 @login_required
@@ -288,13 +371,52 @@ def products():
     )
 
 
-@app.route('/view-product/<int:product_id>')                                      #view single product
+@app.route('/view-product/<int:product_id>')
 def view_product(product_id):
 
-    product = Product.query.get_or_404(product_id)                             #find product, if doesnt exists = 404 page
+    product = Product.query.get_or_404(product_id)
 
-    return render_template('product_detail.html',product=product)               #display one product page
+    new_view = ProductView(                                            #track product view
+        product_id=product.id
+    )
 
+    db.session.add(new_view)
+    db.session.commit()
+
+    return render_template(
+        'product_detail.html',
+        product=product
+    )
+
+
+@app.route('/rate-store/<int:store_id>', methods=['POST'])
+@login_required
+def rate_store(store_id):
+
+    store = Store.query.get_or_404(store_id)
+
+    rating_value = int(request.form.get('rating'))
+
+    if rating_value < 1 or rating_value > 5:
+        return jsonify({
+            "error": "Rating must be between 1 and 5"
+        }), 400
+
+    existing_rating = StoreRating.query.filter_by(
+        store_id=store.id,
+        user_id=current_user.id
+    ).first()
+
+    if existing_rating:
+        existing_rating.rating = rating_value
+    else:
+        new_rating = StoreRating(rating=rating_value,store_id=store.id,user_id=current_user.id)
+
+        db.session.add(new_rating)
+
+    db.session.commit()
+
+    return redirect(url_for('my_store'))
 
 @app.route('/delete-product/<int:product_id>', methods=['POST'])             #delete product (I dont use 'GET' for this to prevent accidental deletion and flask project commonly use post for delete routes)
 @login_required
@@ -313,6 +435,65 @@ def delete_product(product_id):
     return jsonify({
         "error": "Unauthorized action"
     }), 403                                                                      #user is not allow to do this action
+
+
+@app.route('/create-event', methods=['GET', 'POST'])                                 #create event route
+@login_required
+def create_event():
+
+    if request.method == 'POST':
+
+        title = request.form.get('title')
+
+        description = request.form.get('description')
+
+        event_date = request.form.get('event_date')
+
+        new_event = Event(
+            title=title,
+            description=description,
+            event_date=datetime.strptime(
+                event_date,
+                '%Y-%m-%dT%H:%M'                                                           #Converts string into actual datetime object
+            ).replace(tzinfo=timezone.utc)                                                 #%Y = year
+        )                                                                                  #%m = month
+                                                                                           #d = day
+        db.session.add(new_event)                                                          #H = hour
+        db.session.commit()                                                                #M = minute
+
+       
+        users = User.query.all()                                                          #Gets every registered user
+
+        for user in users:
+
+            notification = Notification(
+                message=f"Upcoming Event: {title}",                                          #f"" = formatted string
+                user_id=user.id
+            )
+
+            db.session.add(notification)
+
+        db.session.commit()
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('create_event.html')
+
+@app.route('/notification/read/<int:notification_id>')                        #mark notification as read
+@login_required
+def mark_notification_read(notification_id):
+
+    notification = Notification.query.filter_by(
+        id=notification_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    notification.is_read = True
+
+    db.session.commit()
+
+    return redirect(url_for('dashboard'))
+
 
 #CRUD (CREATE, READ, UPDATE, DELETE) API
 

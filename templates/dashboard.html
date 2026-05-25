@@ -62,6 +62,39 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2e2e32;
+            border-radius: 18px;
+            padding: 20px;
+            margin-top: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        ul {
+            padding-left: 18px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.85);
+        }
+
+        a {
+            color: #8ab4ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
         .btn-register {
             background-color: #ffffff;
             color: #000000;
@@ -105,87 +138,131 @@
             color: #ff4a4a;
             border-color: #ff4a4a;
         }
-
-        .nav-link-custom {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: 0.2s;
-            display: inline-block;
-        }
-
-        .nav-link-custom:hover {
-            color: #ffffff;
-        }
-
-        .btn-marketplace {
-            border-radius: 12px; 
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .btn-marketplace:hover {
-            transform: translateY(-3px);
-        }
     </style>
 </head>
 <body>
 
-    <div class="glow"></div>
+<div class="glow"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">MMU EXCHANGE</a>
-            <div class="ms-auto d-flex align-items-center gap-4">
-                {% if current_user.store %}
-                    <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
-                {% endif %}
-                <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </div>
-    </nav>
-
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="card welcome-card">
-                    <div class="card-body p-5">
-                        <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
-                        <p class="lead text-muted-custom mb-5">You are successfully logged in. Ready to manage your business at MMU?</p>
-                        
-                        <div class="d-flex flex-column align-items-center gap-3">
-                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                
-                                {% if current_user.store %}
-                                    <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
-                                        🏠 Go to My Store
-                                    </a>
-                                {% else %}
-                                    <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
-                                        + Register Your Store
-                                    </a>
-                                {% endif %}
+        <a class="navbar-brand" href="{{ url_for('home') }}">MMU EXCHANGE</a>
+        <div class="ms-auto d-flex align-items-center gap-4">
+            {% if current_user.store %}
+                <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
+            {% endif %}
+            <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+</nav>
 
-                                <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
-                                    View Marketplace
-                                </a >
-                            </div>
+<div class="container">
 
-                            {# Hanya tunjuk pautan tambah produk jika user sudah mempunyai kedai terdaftar #}
-                            {% if current_user.store %}
-                                <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
-                                <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
-                                    + Add New Product to Store
-                                </a>
-                            {% endif %}
-                        </div>
+    <!-- WELCOME CARD -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card welcome-card">
+                <div class="card-body p-5">
+                    <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
+                    <p class="lead text-muted-custom mb-5">
+                        You are successfully logged in. Ready to manage your business at MMU?
+                    </p>
+
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                        {% if current_user.store %}
+                            <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
+                                🏠 Go to My Store
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
+                                + Register Your Store
+                            </a>
+                        {% endif %}
+
+                        <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-lg px-5">
+                            View Marketplace
+                        </a>
                     </div>
+{% if current_user.store %}
+    <p class="text-muted-custom mt-4 mb-2 small">
+        Manage your inventory:
+    </p>
+
+    <a href="{{ url_for('add_product') }}"
+       class="nav-link-custom"
+       style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px; display:inline-block;">
+        + Add New Product to Store
+    </a>
+{% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 🔽 NEW SECTIONS ADDED HERE -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-10">
+
+            <!-- Top Rated Stores -->
+            <div class="section-card">
+                <h3 class="section-title">Top Rated Stores</h3>
+                <ul>
+                    {% for store in top_rated_stores %}
+                        <li>
+                            {{ store.name }} -
+                            {{ "%.1f"|format(store.avg_rating) }}/5
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Most Viewed Products -->
+            <div class="section-card">
+                <h3 class="section-title">Most Viewed Products</h3>
+                <ul>
+                    {% for product in most_viewed_products %}
+                        <li>
+                            {{ product.name }} -
+                            {{ product.views }} views
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="section-card">
+                <h3 class="section-title">Upcoming Events</h3>
+                <ul>
+                    {% for event in upcoming_events %}
+                        <li>
+                            {{ event.title }} -
+                            {{ event.event_date }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Notifications -->
+            <div class="section-card">
+                <h3 class="section-title">Notifications</h3>
+                <ul>
+                    {% for notification in notifications %}
+                        <li>
+                            {{ notification.message }}
+                            <br>
+                            <a href="{{ url_for('mark_notification_read', notification_id=notification.id) }}">
+                                Mark as Read
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
