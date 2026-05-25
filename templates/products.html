@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - MMU EXCHANGE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body { 
+            background-color: #0b0b0f; 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh;
+        }
+
+        /* Tajuk Utama */
+        .header-section h1 {
+            color: #ffffff !important;
+            font-weight: 800;
+        }
+
+        .header-section p {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 1.1rem;
+        }
+
+        .marketplace-badge {
+            background: #5a47cf;
+            color: white !important;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(90, 71, 207, 0.4);
+        }
+
+        /* --- STYLING BARU: SEARCH & FILTER --- */
+        .search-control {
+            background-color: #121217 !important;
+            border: 1px solid #2e2e32 !important;
+            color: #ffffff !important;
+            padding: 14px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .search-control:focus {
+            border-color: #a288ff !important;
+            box-shadow: 0 0 15px rgba(162, 136, 255, 0.15);
+            outline: none;
+        }
+
+        .search-control::placeholder {
+            color: #55555c;
+        }
+
+        .filter-btn {
+            border: 1px solid #2e2e32;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #a288ff;
+            color: #ffffff;
+            background: rgba(162, 136, 255, 0.05);
+        }
+
+        .filter-btn.active {
+            background: #a288ff !important;
+            border-color: #a288ff !important;
+            color: #0b0b0f !important;
+            box-shadow: 0 0 15px rgba(162, 136, 255, 0.3);
+        }
+
+        /* Card Style */
+        .product-card {
+            background: #121217;
+            border: 1px solid #2e2e32;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: #a288ff; 
+            box-shadow: 0 0 20px rgba(162, 136, 255, 0.2);
+        }
+
+        .product-card-img {
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #2e2e32;
+            width: 100%;
+            background: #1a1a1e;
+        }
+
+        .price-tag { 
+            color: #a288ff; 
+            font-weight: 800; 
+            font-size: 1.2rem;
+        }
+
+        .badge-category {
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            background: rgba(162, 136, 255, 0.2);
+            color: #a288ff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(162, 136, 255, 0.3);
+        }
+
+        .btn-view {
+            position: relative;
+            z-index: 5;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background-color: #a288ff !important;
+            color: white !important;
+        }
+
+        .empty-state h3 { color: #ffffff !important; font-weight: 700; }
+        .empty-state p { color: rgba(255, 255, 255, 0.6) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+        <div class="text-center mb-5 header-section">
+            <div class="mb-3">
+                <span class="marketplace-badge text-uppercase" style="font-size: 0.7rem;">Marketplace</span>
+            </div>
+            <h1 class="display-4">Store Directory</h1>
+            <p>Browse through all products and services available at MMU.</p>
+            <div class="mt-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light px-4" style="border-radius: 10px;">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8 text-center">
+                <input type="text" id="searchBar" class="form-control search-control mb-3" placeholder="Search products by name...">
+                
+                <div class="d-flex flex-wrap gap-2 justify-content-center" id="categoryFilters">
+                    <button class="filter-btn active" data-category="all">All Items</button>
+                    <button class="filter-btn" data-category="Electronics">Electronics</button>
+                    <button class="filter-btn" data-category="Books">Books</button>
+                    <button class="filter-btn" data-category="Clothing">Clothing</button>
+                    <button class="filter-btn" data-category="Others">Others</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="productGrid">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 product-item-wrapper" 
+                 data-name="{{ product.name | lower }}" 
+                 data-category="{{ product.category if product.category else 'General' }}"> 
+                
+                <div class="product-card">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="product-card-img" alt="{{ product.name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60';">
+                    {% else %}
+                        {% if product.category and 'book' in product.category.lower() %}
+                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books">
+                        {% elif product.category and ('tech' in product.category.lower() or 'gadget' in product.category.lower()) %}
+                            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}">
+                        {% endif %}
+                    {% endif %}
+
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <div class="mb-3">
+                            <span class="badge-category text-uppercase">{{ product.category if product.category else 'General' }}</span>
+                        </div>
+                        
+                        <h5 class="fw-bold text-white mb-2 text-truncate" style="font-size: 1.1rem;" title="{{ product.name }}">{{ product.name }}</h5>
+                        
+                        <p class="price-tag mb-1">RM {{ "%.2f"|format(product.price) }}</p>
+                        
+                        <p class="small mb-4" style="color: rgba(255,255,255,0.5);">
+                            Store: <span style="color: #a288ff;">{{ product.store.name if product.store else 'Unknown' }}</span>
+                        </p>
+                        
+                        <div class="d-grid mt-auto">
+                            <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-light fw-bold py-2 btn-view" style="border-radius: 10px;">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5 empty-state" id="emptyState">
+                <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
+                    <h3>No products listed yet.</h3>
+                    <p>Be the first one to start selling!</p>
+                    <a href="{{ url_for('add_product') }}" class="btn btn-primary btn-lg mt-3" style="background: white; color: black; border: none; font-weight: 700; border-radius: 12px;">
+                        + Add My First Product
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="col-12 text-center py-5 empty-state d-none" id="noResultsState">
+                <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
+                    <h3>No products found.</h3>
+                    <p>Try searching for a different item name or select another category.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBar = document.getElementById('searchBar');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const productItems = document.querySelectorAll('.product-item-wrapper');
+            const noResultsState = document.getElementById('noResultsState');
+
+            let currentCategory = 'all';
+            let searchQuery = '';
+
+            function filterProducts() {
+                let visibleCount = 0;
+
+                productItems.forEach(item => {
+                    const productName = item.getAttribute('data-name');
+                    const productCategory = item.getAttribute('data-category');
+
+                    const matchesSearch = productName.includes(searchQuery);
+                    const matchesCategory = (currentCategory === 'all') || (productCategory === currentCategory);
+
+                    if (matchesSearch && matchesCategory) {
+                        item.classList.remove('d-none');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // Paparkan 'No products found' jika senarai kosong selepas ditapis
+                if (productItems.length > 0) {
+                    if (visibleCount === 0) {
+                        noResultsState.classList.remove('d-none');
+                    } else {
+                        noResultsState.classList.add('d-none');
+                    }
+                }
+            }
+
+            // Logik menaip pada Search Bar
+            searchBar.addEventListener('input', function(e) {
+                searchQuery = e.target.value.toLowerCase().trim();
+                filterProducts();
+            });
+
+            // Logik klik pada Butang Kategori
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    currentCategory = this.getAttribute('data-category');
+                    filterProducts();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
