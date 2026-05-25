@@ -40,7 +40,7 @@
         }
 
         .welcome-card { 
-            margin-top: 100px; 
+            margin-top: 40px; 
             background: rgba(255, 255, 255, 0.03); 
             backdrop-filter: blur(15px);
             border-radius: 24px; 
@@ -48,6 +48,14 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             position: relative;
             z-index: 1;
+        }
+
+        .data-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #2e2e32;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
         }
 
         .display-4 {
@@ -128,6 +136,14 @@
         .btn-marketplace:hover {
             transform: translateY(-3px);
         }
+
+        .list-group-item-custom {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+            margin-bottom: 8px;
+            border-radius: 8px !important;
+        }
     </style>
 </head>
 <body>
@@ -146,17 +162,17 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container my-5">
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="card welcome-card">
-                    <div class="card-body p-5">
+            <div class="col-md-10">
+                
+                <div class="card welcome-card mb-4">
+                    <div class="card-body p-5 text-center">
                         <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
-                        <p class="lead text-muted-custom mb-5">You are successfully logged in. Ready to manage your business at MMU?</p>
+                        <p class="lead text-muted-custom mb-4">You are successfully logged in. Ready to manage your business at MMU?</p>
                         
                         <div class="d-flex flex-column align-items-center gap-3">
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                
                                 {% if current_user.store %}
                                     <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
                                         🏠 Go to My Store
@@ -169,10 +185,9 @@
 
                                 <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
                                     View Marketplace
-                                </a >
+                                </a>
                             </div>
 
-                            {# Hanya tunjuk pautan tambah produk jika user sudah mempunyai kedai terdaftar #}
                             {% if current_user.store %}
                                 <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
                                 <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
@@ -182,6 +197,80 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="data-card">
+                    <h3 class="h5 mb-3 text-warning">🔔 Notifications</h3>
+                    {% if notifications %}
+                        <div class="list-group">
+                            {% for notif in notifications %}
+                                <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                    <span>{{ notif.message }}</span>
+                                    <a href="{{ url_for('mark_notification_read', notification_id=notif.id) }}" class="btn btn-sm btn-outline-secondary">Mark Read</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted-custom small mb-0">No new notifications.</p>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="data-card h-100">
+                            <h3 class="h5 mb-3 text-info">⭐ Top Rated Stores</h3>
+                            {% if top_rated_stores %}
+                                <ul class="list-group">
+                                    {% for store in top_rated_stores %}
+                                        <li class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                            <span>{{ store.name }}</span>
+                                            <span class="badge bg-primary rounded-pill">{{ "%.1f"|format(store.avg_rating) }} / 5.0</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted-custom small mb-0">No store ratings yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="data-card h-100">
+                            <h3 class="h5 mb-3 text-success">🔥 Most Viewed Products</h3>
+                            {% if most_viewed_products %}
+                                <ul class="list-group">
+                                    {% for item in most_viewed_products %}
+                                        <li class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                            <span>{{ item.name }}</span>
+                                            <span class="badge bg-secondary rounded-pill">{{ item.views }} views</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted-custom small mb-0">No product interactions recorded yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-card mt-4">
+                    <h3 class="h5 mb-3 text-danger">📅 Upcoming Events</h3>
+                    {% if upcoming_events %}
+                        <div class="row">
+                            {% for evt in upcoming_events %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="p-3 rounded style" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05);">
+                                        <h6>{{ evt.title }}</h6>
+                                        <p class="text-muted-custom small mb-1">{{ evt.description }}</p>
+                                        <small class="text-info">{{ evt.event_date.strftime('%Y-%m-%d %H:%M') }} UTC</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted-custom small mb-0">No upcoming community events scheduled.</p>
+                    {% endif %}
+                </div>
+
             </div>
         </div>
     </div>
