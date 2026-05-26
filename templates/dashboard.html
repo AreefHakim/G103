@@ -50,10 +50,28 @@
             z-index: 1;
         }
 
+        .analytics-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid #2e2e32;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
         .display-4 {
             font-weight: 800;
             letter-spacing: -2px;
             background: linear-gradient(180deg, #ffffff 0%, #d1d1d1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, #ffffff 0%, #a2a2a2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -128,6 +146,43 @@
         .btn-marketplace:hover {
             transform: translateY(-3px);
         }
+
+        .list-group-item-custom {
+            background: rgba(255, 255, 255, 0.01) !important;
+            border-bottom: 1px solid #1f1f23 !important;
+            color: white !important;
+            padding: 1rem 1.25rem;
+        }
+
+        .list-group-item-custom:last-child {
+            border-bottom: none !important;
+        }
+
+        .badge-rating {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            font-weight: 600;
+        }
+
+        .badge-views {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .event-box {
+            background: rgba(162, 136, 255, 0.02);
+            border: 1px solid #2e2e32;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .event-box:hover {
+            border-color: #a288ff;
+            background: rgba(162, 136, 255, 0.04);
+        }
     </style>
 </head>
 <body>
@@ -141,14 +196,15 @@
                 {% if current_user.store %}
                     <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
                 {% endif %}
+                <a href="{{ url_for('profile') }}" class="nav-link-custom">👤 My Profile</a>
                 <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container pb-5">
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
+            <div class="col-md-10 text-center">
                 <div class="card welcome-card">
                     <div class="card-body p-5">
                         <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
@@ -156,12 +212,11 @@
                         
                         <div class="d-flex flex-column align-items-center gap-3">
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                
                                 {% if current_user.store %}
                                     <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
                                         🏠 Go to My Store
                                     </a>
-                                {% else %}
+                                Dadah {% else %}
                                     <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
                                         + Register Your Store
                                     </a>
@@ -169,15 +224,116 @@
 
                                 <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
                                     View Marketplace
-                                </a >
+                                </a>
                             </div>
 
-                            {# Hanya tunjuk pautan tambah produk jika user sudah mempunyai kedai terdaftar #}
                             {% if current_user.store %}
                                 <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
                                 <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
                                     + Add New Product to Store
                                 </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-10">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card analytics-card h-100">
+                            <div class="card-body p-4">
+                                <h4 class="section-title mb-4">⭐ Top-Rated Stores</h4>
+                                <div class="list-group list-group-flush rounded-3 overflow-hidden">
+                                    {% if stores %}
+                                        {% for store in stores %}
+                                        <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                            <span>{{ store.name }}</span>
+                                            <span class="badge badge-rating px-3 py-2">★ {{ "%.1f"|format(store.rating) }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="text-center text-muted-custom py-4">No stores registered yet.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card analytics-card h-100">
+                            <div class="card-body p-4">
+                                <h4 class="section-title mb-4">🔥 Most Viewed Products</h4>
+                                <div class="list-group list-group-flush rounded-3 overflow-hidden">
+                                    {% if products %}
+                                        {% for product in products %}
+                                        <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                            <span>{{ product.name }}</span>
+                                            <span class="badge badge-views px-3 py-2">RM {{ "%.2f"|format(product.price) }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="text-center text-muted-custom py-4">No products available yet.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-10">
+                <div class="card analytics-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="section-title mb-0">🔔 Event Reminders & Announcements</h4>
+                            {% if current_user.username == 'admin' %}
+                                <a href="{{ url_for('add_event') }}" class="btn btn-sm btn-light px-3 fw-bold" style="border-radius: 8px;">
+                                    ➕ Add New Event
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3">
+                            {% if events %}
+                                {% for event in events %}
+                                <div class="col-12">
+                                    <div class="p-3 event-box d-flex align-items-start justify-content-between gap-3">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <div class="fs-3" style="color: #a288ff; line-height: 1;">📢</div>
+                                            <div>
+                                                <h5 class="mb-1 text-white fw-bold" style="font-size: 1.05rem;">{{ event.title }}</h5>
+                                                <p class="mb-2 small" style="color: rgba(255,255,255,0.6); line-height: 1.5;">{{ event.description }}</p>
+                                                <div class="d-flex flex-wrap gap-3 small" style="color: rgba(255,255,255,0.4);">
+                                                    <span>📅 <strong>Date:</strong> {{ event.date }}</span>
+                                                    <span>📍 <strong>Location:</strong> {{ event.location }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if current_user.username == 'admin' %}
+                                        <div class="d-flex gap-2 flex-shrink-0">
+                                            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-sm btn-outline-light px-3" style="border-radius: 8px; border-color: rgba(255,255,255,0.15); font-size: 0.8rem; transition: 0.2s;">
+                                                ✏️ Edit
+                                            </a>
+                                            <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST" onsubmit="return confirm('Betul ke nak padam event ni?');" style="margin:0;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger px-3" style="border-radius: 8px; font-size: 0.8rem; transition: 0.2s;">
+                                                    🗑️ Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 text-center text-muted-custom py-4">
+                                    No active events or reminders at the moment.
+                                </div>
                             {% endif %}
                         </div>
                     </div>
