@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm 
@@ -11,7 +11,7 @@ from sqlalchemy import func
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'                             # connects app.py to database.db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'                             # connects app.py to database.db
 app.config['SECRET_KEY'] = 'thisisasecretkey'                                                # to secure the session cookie 
 
 db = SQLAlchemy(app)                                                                         # creates the database instance 

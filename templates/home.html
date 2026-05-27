@@ -1,264 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - MMU EXCHANGE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background-color: #0b0b0f; 
-            min-height: 100vh; 
-            color: white;
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-        }
+{% extends 'dashboard.html' %}
 
-        .glow {
-            position: fixed;
-            top: 0; left: 50%; transform: translateX(-50%);
-            width: 1000px; height: 400px;
-            background: radial-gradient(circle, rgba(94, 59, 238, 0.1) 0%, rgba(11, 11, 15, 0) 70%);
-            z-index: 0;
-            pointer-events: none;
-        }
+{% block title %}Home{% endblock %}
 
-        .navbar {
-            background: rgba(11, 11, 15, 0.8) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #2e2e32;
-            padding: 1rem 0;
-            z-index: 10;
-        }
-
-        .navbar-brand {
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(180deg, #ffffff 0%, #a2a2a2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .welcome-card { 
-            margin-top: 100px; 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(15px);
-            border-radius: 24px; 
-            border: 1px solid #2e2e32;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 1;
-        }
-
-        .display-4 {
-            font-weight: 800;
-            letter-spacing: -2px;
-            background: linear-gradient(180deg, #ffffff 0%, #d1d1d1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .text-muted-custom {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .section-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #2e2e32;
-            border-radius: 18px;
-            padding: 20px;
-            margin-top: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .section-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: white;
-        }
-
-        ul {
-            padding-left: 18px;
-        }
-
-        li {
-            margin-bottom: 10px;
-            color: rgba(255,255,255,0.85);
-        }
-
-        a {
-            color: #8ab4ff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .btn-register {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 700;
-            border-radius: 12px;
-            padding: 14px 32px;
-            transition: 0.3s;
-        }
-
-        .btn-register:hover {
-            background-color: #e2e2e2;
-            transform: translateY(-3px);
-            color: #000000;
-        }
-
-        .btn-my-store {
-            background-color: #28a745;
-            color: white;
-            font-weight: 700;
-            border-radius: 12px;
-            padding: 14px 32px;
-            transition: 0.3s;
-            border: none;
-        }
-
-        .btn-my-store:hover {
-            background-color: #218838;
-            transform: translateY(-3px);
-            color: white;
-        }
-
-        .btn-logout {
-            border: 1px solid #2e2e32;
-            color: #ffffff;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-        
-        .btn-logout:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #ff4a4a;
-            border-color: #ff4a4a;
-        }
-    </style>
-</head>
-<body>
-
-<div class="glow"></div>
-
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url_for('home') }}">MMU EXCHANGE</a>
-        <div class="ms-auto d-flex align-items-center gap-4">
-            {% if current_user.store %}
-                <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
-            {% endif %}
-            <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <div class="card welcome-card">
-                <div class="card-body p-5">
-                    <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
-                    <p class="lead text-muted-custom mb-5">
-                        You are successfully logged in. Ready to manage your business at MMU?
-                    </p>
-
-                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                        {% if current_user.store %}
-                            <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
-                                🏠 Go to My Store
-                            </a>
-                        {% else %}
-                            <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
-                                + Register Your Store
-                            </a>
-                        {% endif %}
-
-                        <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-lg px-5">
-                            View Marketplace
-                        </a>
+{% block content %}
+<div class="container my-5">
+    <div class="mb-4">
+        <h3 class="text-warning">🔔 Notifications</h3>
+        {% if notifications %}
+            <div class="list-group">
+                {% for notif in notifications %}
+                    <div class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span>{{ notif.message }}</span>
+                        <a href="{{ url_for('mark_notification_read', notification_id=notif.id) }}" class="btn btn-sm btn-outline-secondary">Mark Read</a>
                     </div>
-                    {% if current_user.store %}
-    <p class="text-muted-custom mt-4 mb-2 small">
-        Manage your inventory:
-    </p>
-
-    <a href="{{ url_for('add_product') }}"
-       class="nav-link-custom"
-       style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px; display:inline-block;">
-        + Add New Product to Store
-    </a>
-{% endif %}
-
-                </div>
+                {% endfor %}
             </div>
-        </div>
+        {% else %}
+            <p class="text-muted">No new notifications.</p>
+        {% endif %}
     </div>
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-10">
-
-            <div class="section-card">
-                <h3 class="section-title">Top Rated Stores</h3>
-                <ul>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h3 class="text-info">⭐ Top Rated Stores</h3>
+            {% if top_rated_stores %}
+                <ul class="list-group">
                     {% for store in top_rated_stores %}
-                        <li>
-                            {{ store.name }} -
-                            {{ "%.1f"|format(store.avg_rating) }}/5
+                        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                            <span>{{ store.name }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ "%.1f"|format(store.avg_rating) }} / 5.0</span>
                         </li>
                     {% endfor %}
                 </ul>
-            </div>
+            {% else %}
+                <p class="text-muted">No ratings yet.</p>
+            {% endif %}
+        </div>
 
-            <div class="section-card">
-                <h3 class="section-title">Most Viewed Products</h3>
-                <ul>
-                    {% for product in most_viewed_products %}
-                        <li>
-                            {{ product.name }} -
-                            {{ product.views }} views
+        <div class="col-md-6 mb-4">
+            <h3 class="text-success">🔥 Most Viewed Products</h3>
+            {% if most_viewed_products %}
+                <ul class="list-group">
+                    {% for item in most_viewed_products %}
+                        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                            <span>{{ item.name }}</span>
+                            <span class="badge bg-secondary rounded-pill">{{ item.views }} views</span>
                         </li>
                     {% endfor %}
                 </ul>
-            </div>
-
-            <!-- Upcoming Events -->
-            <div class="section-card">
-                <h3 class="section-title">Upcoming Events</h3>
-                <ul>
-                    {% for event in upcoming_events %}
-                        <li>
-                            {{ event.title }} -
-                            {{ event.event_date }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="section-card">
-                <h3 class="section-title">Notifications</h3>
-                <ul>
-                    {% for notification in notifications %}
-                        <li>
-                            {{ notification.message }}
-                            <br>
-                            <a href="{{ url_for('mark_notification_read', notification_id=notification.id) }}">
-                                Mark as Read
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
+            {% else %}
+                <p class="text-muted">No product views recorded yet.</p>
+            {% endif %}
         </div>
     </div>
 
+    <div class="mt-4">
+        <h3 class="text-danger">📅 Upcoming Events</h3>
+        {% if upcoming_events %}
+            <div class="row">
+                {% for evt in upcoming_events %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-dark text-white border-secondary h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ evt.title }}</h5>
+                                <p class="card-text text-muted">{{ evt.description }}</p>
+                                <small class="text-info">{{ evt.event_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No upcoming events.</p>
+        {% endif %}
+    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
