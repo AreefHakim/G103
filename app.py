@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm 
@@ -11,7 +11,7 @@ from sqlalchemy import func
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'                             # connects app.py to database.db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'                              # connects app.py to database.db
 app.config['SECRET_KEY'] = 'thisisasecretkey'                                                # to secure the session cookie 
 
 db = SQLAlchemy(app)                                                                         # creates the database instance 
@@ -36,18 +36,25 @@ class User(db.Model, UserMixin):
     store = db.relationship('Store',backref='owner',uselist=False)                            #relationship (User -> Store)
 
 class Store(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
 
     name = db.Column(db.String(100), nullable=False)
 
     description = db.Column(db.String(200))
 
-    phone_number = db.Column(db.String(20),nullable=True)                                     #Phone number support
+    phone_number = db.Column(db.String(20), nullable=True)                                 #phone number support
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    rating = db.Column(
+        db.Float,
+        default=0
+    )
 
-    products = db.relationship('Product',backref='store',lazy=True)                           #relationship (Store -> Products)
-
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
+    )
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)                                               #creates unique id for every product
 
@@ -96,6 +103,72 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Password"})
     
     submit = SubmitField("Login")
+
+class ChangePasswordForm(FlaskForm):
+
+    current_password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=20)],
+        render_kw={"placeholder": "Current Password"}
+    )
+
+    new_password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=20)],
+        render_kw={"placeholder": "New Password"}
+    )
+
+    confirm_password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=20)],
+        render_kw={"placeholder": "Confirm New Password"}
+    )
+
+    submit = SubmitField('Update Password')
+
+def format_flatpickr_date(raw_date):
+
+    if not raw_date:
+        return ""
+
+    if " to " in raw_date:
+
+        try:
+
+            start_str, end_str = raw_date.split(" to ")
+
+            start_obj = datetime.strptime(
+                start_str.strip(),
+                '%Y-%m-%d'
+            )
+
+            end_obj = datetime.strptime(
+                end_str.strip(),
+                '%Y-%m-%d'
+            )
+
+            if start_obj.month == end_obj.month and \
+               start_obj.year == end_obj.year:
+
+                return f"{start_obj.strftime('%d')}-{end_obj.strftime('%d %B %Y')}"
+
+            else:
+
+                return f"{start_obj.strftime('%d %B')}-{end_obj.strftime('%d %B %Y')}"
+
+        except:
+            return raw_date
+
+    else:
+
+        try:
+
+            date_obj = datetime.strptime(
+                raw_date.strip(),
+                '%Y-%m-%d'
+            )
+
+            return date_obj.strftime('%d %B %Y')
+
+        except:
+            return raw_date
     
 class ProductView(db.Model):
 
@@ -171,8 +244,8 @@ def dashboard():
         user_id=current_user.id
     ).all()
 
-   
-    top_rated_stores = db.session.query(                                           # Top Rated Stores
+
+    top_rated_stores = db.session.query(
         Store.name,
         func.avg(StoreRating.rating).label('avg_rating')
     ).join(
@@ -184,8 +257,8 @@ def dashboard():
         func.avg(StoreRating.rating).desc()
     ).limit(5).all()
 
-                      
-    most_viewed_products = db.session.query(                                        # Most Viewed Products
+
+    most_viewed_products = db.session.query(
         Product.name,
         func.count(ProductView.id).label('views')
     ).join(
@@ -197,20 +270,75 @@ def dashboard():
         func.count(ProductView.id).desc()
     ).limit(5).all()
 
-    
-    upcoming_events = Event.query.filter(Event.event_date >= datetime.now(timezone.utc)).order_by(Event.event_date.asc()).all()                       # Upcoming Events
+
+    upcoming_events = Event.query.filter(
+        Event.event_date >= datetime.now(timezone.utc)
+    ).order_by(
+        Event.event_date.asc()
+    ).all()
 
 
-    notifications = Notification.query.filter_by(user_id=current_user.id,is_read=False).all()                            # Notifications
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id,
+        is_read=False
+    ).all()
 
     return render_template(
-        'dashboard.html',
-        username=current_user.username,
-        stores=user_stores,
-        top_rated_stores=top_rated_stores,
-        most_viewed_products=most_viewed_products,
-        upcoming_events=upcoming_events,
-        notifications=notifications
+    'dashboard.html',
+    username=current_user.username,
+    stores=top_rated_stores,
+    products=most_viewed_products,
+    events=upcoming_events,
+    notifications=notifications
+)
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+
+        if bcrypt.check_password_hash(
+            current_user.password,
+            form.current_password.data
+        ):
+
+            if form.new_password.data == form.confirm_password.data:
+
+                hashed_password = bcrypt.generate_password_hash(
+                    form.new_password.data
+                ).decode('utf-8')
+
+                current_user.password = hashed_password
+
+                db.session.commit()
+
+                flash(
+                    'Password updated successfully!',
+                    'success'
+                )
+
+                return redirect(url_for('profile'))
+
+            else:
+
+                flash(
+                    'New passwords do not match.',
+                    'danger'
+                )
+
+        else:
+
+            flash(
+                'Incorrect current password.',
+                'danger'
+            )
+
+    return render_template(
+        'profile.html',
+        form=form
     )
 
 
@@ -341,15 +469,87 @@ def add_product():
 
     return render_template('add_product.html')
 
-
 @app.route('/products')
 def products():
 
-    all_products = Product.query.all()
+    search_query = request.args.get('search', '')
+
+    category_filter = request.args.get('category', '')
+
+    sort_by = request.args.get('sort', '')
+
+    query = Product.query.join(Store)
+
+    if search_query:
+
+        query = query.filter(
+            Product.name.ilike(
+                f'%{search_query}%'
+            )
+        )
+
+    if category_filter:
+
+        query = query.filter(
+            Product.category == category_filter
+        )
+
+    if sort_by == 'price_low':
+
+        query = query.order_by(
+            Product.price.asc()
+        )
+
+    elif sort_by == 'price_high':
+
+        query = query.order_by(
+            Product.price.desc()
+        )
+
+    elif sort_by == 'popularity':
+
+        query = query.outerjoin(
+            ProductView,
+            Product.id == ProductView.product_id
+        ).group_by(
+            Product.id
+        ).order_by(
+            func.count(ProductView.id).desc()
+        )
+
+    elif sort_by == 'rating':
+
+        query = query.outerjoin(
+            StoreRating,
+            Store.id == StoreRating.store_id
+        ).group_by(
+            Product.id
+        ).order_by(
+            func.avg(StoreRating.rating).desc()
+        )
+
+    else:
+
+        query = query.order_by(
+            Product.id.desc()
+        )
+
+    all_products = query.all()
+
+    categories = [
+        p.category
+        for p in Product.query.with_entities(
+            Product.category
+        ).distinct()
+    ]
 
     return render_template(
         'products.html',
-        products=all_products
+        products=all_products,
+        categories=categories,
+        search_query=search_query,
+        category_filter=category_filter,
+        sort_by=sort_by
     )
 
 
@@ -358,12 +558,15 @@ def view_product(product_id):
 
     product = Product.query.get_or_404(product_id)
 
-    new_view = ProductView(                                            #track product view
+
+    new_view = ProductView(                             #track product view
         product_id=product.id
     )
 
     db.session.add(new_view)
+
     db.session.commit()
+
 
     return render_template(
         'product_detail.html',
@@ -460,6 +663,148 @@ def create_event():
         return redirect(url_for('dashboard'))
 
     return render_template('create_event.html')
+
+@app.route('/edit-event/<int:event_id>', methods=['GET', 'POST'])                        #Flask expects a value in the URL (need to be int)
+@login_required
+def edit_event(event_id):
+
+    if current_user.username != 'admin':
+
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
+
+
+    event = Event.query.get_or_404(event_id)
+
+
+    if request.method == 'POST':
+
+        title = request.form.get('title')
+
+        description = request.form.get('description')
+
+        raw_date = request.form.get('date')
+
+
+        formatted_date = format_flatpickr_date(raw_date)
+
+
+        try:
+
+            parsed_date = datetime.strptime(
+                raw_date.split(' to ')[0],
+                '%Y-%m-%d'
+            ).replace(tzinfo=timezone.utc)
+
+        except:
+
+            parsed_date = datetime.now(timezone.utc)
+
+
+        event.title = title
+
+        event.description = description
+
+        event.event_date = parsed_date
+
+        db.session.commit()
+
+        return redirect(url_for('dashboard'))
+
+
+    current_date_value = event.event_date.strftime('%Y-%m-%d')
+
+
+    return render_template(
+        'edit_event.html',
+        event=event,
+        current_date_value=current_date_value
+    )
+
+@app.route('/add-event', methods=['GET', 'POST'])
+@login_required
+def add_event():
+
+    if current_user.username != 'admin':
+
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
+
+
+    if request.method == 'POST':
+
+        title = request.form.get('title')
+
+        description = request.form.get('description')
+
+        raw_date = request.form.get('date')
+
+
+        formatted_date = format_flatpickr_date(raw_date)
+
+
+        try:
+
+            parsed_date = datetime.strptime(
+                raw_date.split(' to ')[0],
+                '%Y-%m-%d'
+            ).replace(tzinfo=timezone.utc)
+
+        except:
+
+            parsed_date = datetime.now(timezone.utc)
+
+
+        new_event = Event(
+            title=title,
+            description=description,
+            event_date=parsed_date
+        )
+
+        db.session.add(new_event)
+
+        db.session.commit()
+
+
+        users = User.query.all()
+
+        for user in users:
+
+            notification = Notification(
+                message=f"Upcoming Event: {title}",
+                user_id=user.id
+            )
+
+            db.session.add(notification)
+
+        db.session.commit()
+
+
+        return redirect(url_for('dashboard'))
+
+
+    return render_template('add_event.html')
+
+@app.route('/delete-event/<int:event_id>', methods=['POST'])
+@login_required
+def delete_event(event_id):
+
+    if current_user.username != 'admin':
+
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
+
+
+    event = Event.query.get_or_404(event_id)
+
+    db.session.delete(event)
+
+    db.session.commit()
+
+    return redirect(url_for('dashboard'))
 
 @app.route('/notification/read/<int:notification_id>')                        #mark notification as read
 @login_required
