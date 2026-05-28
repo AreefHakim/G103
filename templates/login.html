@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MMU EXCHANGE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0b0b0f; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2e2e32;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        h2 { font-weight: 800; letter-spacing: -1px; }
+        .form-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+        
+        .form-control {
+            background-color: #1a1a1e !important;
+            border: 1px solid #3e3e42 !important;
+            color: white !important;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        /* --- FIX PLACEHOLDER GELAP --- */
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important; /* Ditingkatkan supaya nampak */
+            opacity: 1;
+        }
+        .form-control::-webkit-input-placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .form-control:focus {
+            background-color: #252529 !important;
+            border-color: #5e3bee !important;
+            box-shadow: 0 0 0 0.25rem rgba(94, 59, 238, 0.2);
+            color: white !important;
+        }
+
+        .btn-login {
+            background: white;
+            color: black;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover { background: #e2e2e2; transform: translateY(-2px); }
+        
+        .footer-link { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; }
+        .forgot-link { font-size: 0.75rem; float: right; color: rgba(255,255,255,0.4); text-decoration: none; }
+        .forgot-link:hover { color: white; }
+        
+        .signup-link {
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid #5e3bee;
+            padding-bottom: 2px;
+            transition: 0.2s;
+        }
+        .signup-link:hover { color: #5e3bee; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="login-card">
+                    <div class="text-center mb-4">
+                        <h2>MMU EXCHANGE</h2>
+                        <p class="text-white-50 small">Log in to your account</p>
+                    </div>
+
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            {{ form.username(class="form-control", placeholder="Enter username") }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <a href="{{ url_for('forgotpassword') }}" class="forgot-link">Forgot?</a>
+                            {{ form.password(class="form-control", placeholder="Enter password") }}
+                        </div>
+
+                        {{ form.submit(class="btn btn-login") }}
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="footer-link mb-0">Don't have an account? 
+                            <a href="{{ url_for('register') }}" class="signup-link">Sign Up</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

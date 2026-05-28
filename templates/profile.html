@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - MMU EXCHANGE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0b0b0f; 
+            min-height: 100vh; 
+            color: white;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .profile-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid #2e2e32;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            margin-top: 60px;
+        }
+        .form-control {
+            background-color: #121217 !important;
+            border: 1px solid #2e2e32 !important;
+            color: white !important;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .form-control:focus {
+            border-color: #a288ff !important;
+            box-shadow: 0 0 10px rgba(162, 136, 255, 0.2) !important;
+        }
+        .btn-update {
+            background-color: #a288ff;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 12px;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-update:hover {
+            background-color: #8a6be3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card profile-card p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="display-4 mb-2">👤</div>
+                        <h3 class="fw-bold">Account Profile</h3>
+                        <p class="text-white-50">Logged in as: <span class="badge bg-secondary px-3 py-2">@{{ current_user.username }}</span></p>
+                    </div>
+
+                    <hr class="border-secondary mb-4">
+
+                    <h5 class="fw-bold mb-3" style="color: #a288ff;">🔒 Change Password</h5>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} small" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-white-50">Current Password</label>
+                            {{ form.current_password(class="form-control") }}
+                            {% if form.current_password.errors %}
+                                {% for error in form.current_password.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-white-50">New Password</label>
+                            {{ form.new_password(class="form-control") }}
+                            {% if form.new_password.errors %}
+                                {% for error in form.new_password.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small text-white-50">Confirm New Password</label>
+                            {{ form.confirm_password(class="form-control") }}
+                            {% if form.confirm_password.errors %}
+                                {% for error in form.confirm_password.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-update") }}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary text-white border-secondary" style="border-radius: 10px;">Back to Dashboard</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
