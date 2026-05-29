@@ -277,9 +277,9 @@
         </small>
     </div>
 
-    <span class="badge badge-views px-3 py-2">
-        RM {{ "%.2f"|format(product[0].price) }}
-    </span>
+    <span class="badge badge-rating px-3 py-2">
+    ★ {{ "%.1f"|format(store.avg_rating) }}
+</span>
 </div>
 {% endfor %}
                                     {% else %}
