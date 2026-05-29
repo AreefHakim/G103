@@ -259,16 +259,16 @@ def dashboard():
 
 
     most_viewed_products = db.session.query(
-        Product.name,
-        func.count(ProductView.id).label('views')
-    ).join(
-        ProductView,
-        Product.id == ProductView.product_id
-    ).group_by(
-        Product.id
-    ).order_by(
-        func.count(ProductView.id).desc()
-    ).limit(5).all()
+    Product,
+    func.count(ProductView.id).label('views')
+).join(
+    ProductView,
+    Product.id == ProductView.product_id
+).group_by(
+    Product.id
+).order_by(
+    func.count(ProductView.id).desc()
+).limit(5).all()
 
 
     upcoming_events = Event.query.filter(
