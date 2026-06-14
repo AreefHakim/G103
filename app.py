@@ -259,16 +259,16 @@ def dashboard():
 
 
     most_viewed_products = db.session.query(
-        Product.name,
-        func.count(ProductView.id).label('views')
-    ).join(
-        ProductView,
-        Product.id == ProductView.product_id
-    ).group_by(
-        Product.id
-    ).order_by(
-        func.count(ProductView.id).desc()
-    ).limit(5).all()
+    Product,
+    func.count(ProductView.id).label('views')
+).join(
+    ProductView,
+    Product.id == ProductView.product_id
+).group_by(
+    Product.id
+).order_by(
+    func.count(ProductView.id).desc()
+).limit(5).all()
 
 
     upcoming_events = Event.query.filter(
@@ -412,18 +412,25 @@ def my_store():
 
     return render_template('mystore.html',store=store)
 
-@app.route('/delete-store', methods=['POST'])
+@app.route('/delete-store/<int:store_id>', methods=['POST'])
 @login_required
-def delete_store():
+def delete_store(store_id):
 
-    user_store = Store.query.filter_by(user_id=current_user.id).first()
+    store = Store.query.get_or_404(store_id)
+                                                                                                    
+    if current_user.username != 'admin' and \
+       store.user_id != current_user.id:                                                            #for ADMIN to delete stores
 
-    if user_store:
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
 
-        Product.query.filter_by(store_id=user_store.id).delete()
+    Product.query.filter_by(
+        store_id=store.id
+    ).delete()
 
-        db.session.delete(user_store)
-        db.session.commit()
+    db.session.delete(store)
+    db.session.commit()
 
     return redirect(url_for('dashboard'))
 
