@@ -1,0 +1,16 @@
+<h2>All Stores</h2>
+
+{% for store in stores %}
+    <div>
+        <h3>{{ store.name }}</h3>
+        <p>{{ store.description }}</p>
+        <p>Owner: {{ store.owner.username }}</p>
+
+        <form method="POST"
+              action="{{ url_for('delete_store', store_id=store.id) }}">
+            <button type="submit">
+                Delete Store
+            </button>
+        </form>
+    </div>
+{% endfor %}
