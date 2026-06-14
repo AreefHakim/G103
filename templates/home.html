@@ -1,78 +1,88 @@
-{% extends 'dashboard.html' %}
-
-{% block title %}Home{% endblock %}
-
 {% block content %}
+<style>
+    :root { --glass-bg: rgba(255, 255, 255, 0.05); }
+    .custom-card {
+        background: var(--glass-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 12px;
+    }
+    .custom-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .badge-rating { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+</style>
+
 <div class="container my-5">
-    <div class="mb-4">
-        <h3 class="text-warning">🔔 Notifications</h3>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold">Dashboard Overview</h2>
+        <span class="text-muted">{{ upcoming_events|length }} Events Scheduled</span>
+    </div>
+
+    <div class="mb-5">
+        <h5 class="text-uppercase text-muted small fw-bold mb-3">🔔 Notifications</h5>
         {% if notifications %}
-            <div class="list-group">
-                {% for notif in notifications %}
-                    <div class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-                        <span>{{ notif.message }}</span>
-                        <a href="{{ url_for('mark_notification_read', notification_id=notif.id) }}" class="btn btn-sm btn-outline-secondary">Mark Read</a>
-                    </div>
-                {% endfor %}
-            </div>
+            {% for notif in notifications %}
+                <div class="alert alert-dismissible fade show custom-card text-white mb-2" role="alert">
+                    <i class="bi bi-info-circle me-2 text-warning"></i> {{ notif.message }}
+                    <a href="{{ url_for('mark_notification_read', notification_id=notif.id) }}" 
+                       class="btn-close btn-close-white" aria-label="Close"></a>
+                </div>
+            {% endfor %}
         {% else %}
-            <p class="text-muted">No new notifications.</p>
+            <p class="text-muted small">All caught up!</p>
         {% endif %}
     </div>
 
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <h3 class="text-info">⭐ Top Rated Stores</h3>
-            {% if top_rated_stores %}
-                <ul class="list-group">
+        <div class="col-lg-6 mb-4">
+            <div class="p-4 custom-card h-100">
+                <h4 class="text-info mb-4">⭐ Top Rated Stores</h4>
+                <div class="list-group list-group-flush bg-transparent">
                     {% for store in top_rated_stores %}
-                        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                        <div class="list-group-item bg-transparent text-white d-flex justify-content-between border-secondary px-0">
                             <span>{{ store.name }}</span>
-                            <span class="badge bg-primary rounded-pill">{{ "%.1f"|format(store.avg_rating) }} / 5.0</span>
-                        </li>
+                            <span class="badge badge-rating rounded-pill">{{ "%.1f"|format(store.avg_rating) }}</span>
+                        </div>
                     {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">No ratings yet.</p>
-            {% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <h3 class="text-success">🔥 Most Viewed Products</h3>
-            {% if most_viewed_products %}
-                <ul class="list-group">
-                    {% for item in most_viewed_products %}
-                        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-                            <span>{{ item.name }}</span>
-                            <span class="badge bg-secondary rounded-pill">{{ item.views }} views</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">No product views recorded yet.</p>
-            {% endif %}
+        <div class="col-lg-6 mb-4">
+            <div class="p-4 custom-card h-100">
+                <h4 class="text-success mb-4">📈 Trending Products</h4>
+                {% for item in most_viewed_products %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">{{ item.name }}</div>
+                          <div class="progress mt-1" style="height: 5px; background: rgba(255,255,255,0.1);">
+                           <div class="progress-bar bg-success trending-progress" data-views="{{ item.views }}"></div>
+                          </div>
+                        </div>
+                        <span class="ms-3 small text-muted">{{ item.views }} views</span>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <div class="mt-4">
-        <h3 class="text-danger">📅 Upcoming Events</h3>
-        {% if upcoming_events %}
-            <div class="row">
-                {% for evt in upcoming_events %}
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-dark text-white border-secondary h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ evt.title }}</h5>
-                                <p class="card-text text-muted">{{ evt.description }}</p>
-                                <small class="text-info">{{ evt.event_date.strftime('%Y-%m-%d %H:%M') }}</small>
-                            </div>
+        <h4 class="text-danger mb-4">📅 Upcoming Events</h4>
+        <div class="row">
+            {% for evt in upcoming_events %}
+                <div class="col-md-4 mb-3">
+                    <div class="card custom-card text-white h-100">
+                        <div class="card-body">
+                            <div class="text-info small mb-2">{{ evt.event_date.strftime('%b %d, %H:%M') }}</div>
+                            <h5 class="card-title">{{ evt.title }}</h5>
+                            <p class="card-text text-muted small">{{ evt.description }}</p>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-muted">No upcoming events.</p>
-        {% endif %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
