@@ -938,18 +938,27 @@ def update_store(store_id):
     })
 
 
-@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                    #DELETE store
+@app.route('/store/delete/<int:store_id>', methods=['DELETE'])                       #DELETE store
 @login_required
 def delete_store_api(store_id):
 
-    store = Store.query.filter_by(id=store_id,user_id=current_user.id).first()                #Find store id that matches url and belongs to current user
+    store = Store.query.get(store_id)                                                    #Find store id that matches url and belongs to current user 
 
     if not store:
         return jsonify({
             "error": "Store not found"
         }), 404
 
-    Product.query.filter_by(store_id=store.id).delete()                            #Deletes ALL products in the store 
+    if current_user.username != 'admin' and \
+       store.user_id != current_user.id:
+
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
+
+    Product.query.filter_by(
+        store_id=store.id
+    ).delete()                                                                           #DELETES all products in the store
 
     db.session.delete(store)
     db.session.commit()
@@ -961,6 +970,6 @@ def delete_store_api(store_id):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()                                                                #Build and store user's tables if they dont exist
+        db.create_all()                                                                #Build and store user's tables if they dont exist   #Find store id that matches url and belongs to current user
     app.run(debug=True)
 
