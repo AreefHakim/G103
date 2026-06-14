@@ -967,6 +967,21 @@ def delete_store_api(store_id):
         "message": "Store deleted successfully"
     })
 
+@app.route('/manage-stores')                                                            #ADMIN stores management 
+@login_required
+def manage_stores():
+
+    if current_user.username != 'admin':
+        return jsonify({
+            "error": "Unauthorized"
+        }), 403
+
+    stores = Store.query.all()
+
+    return render_template(
+        'manage_stores.html',
+        stores=stores
+    )
 
 if __name__ == '__main__':
     with app.app_context():
