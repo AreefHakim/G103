@@ -614,20 +614,25 @@ def rate_store(store_id):
 @login_required
 def delete_product(product_id):
 
-    product = Product.query.get_or_404(product_id)                         
+    product = Product.query.get_or_404(product_id)                           #find product by id or show 404 error if it doesnt exist
 
-    if current_user.store and \
-       product.store_id == current_user.store.id:                               #security check: check if this product belongs to current user (without this, any user can delete the product)
+    if current_user.username == 'admin' or (                                #allow admin to delete any product
+        current_user.store and
+        product.store_id == current_user.store.id                           #allow store owner to delete their own products
+    ):
 
-        db.session.delete(product)
-        db.session.commit()                                                     #removes product permanently 
+        db.session.delete(product)                                          #remove product from database
 
-        return redirect(url_for('my_store'))
+        db.session.commit()                                                 #save changes permanently
+
+        if current_user.username == 'admin':                                #if admin deleted the product
+            return redirect(url_for('manage_stores'))                       #return admin to store management page
+
+        return redirect(url_for('my_store'))                                #return store owner to their store page
 
     return jsonify({
         "error": "Unauthorized action"
-    }), 403                                                                      #user is not allow to do this action
-
+    }), 403                                                                 #user is not allowed to delete this product
 
 @app.route('/create-event', methods=['GET', 'POST'])                                 #create event route
 @login_required
@@ -967,16 +972,23 @@ def delete_store_api(store_id):
         "message": "Store deleted successfully"
     })
 
-@app.route('/manage-stores')                                                            #ADMIN stores management 
+@app.route('/manage-stores')
 @login_required
 def manage_stores():
 
     if current_user.username != 'admin':
+
         return jsonify({
             "error": "Unauthorized"
         }), 403
 
-    stores = Store.query.all()
+    stores = Store.query.all()                                              #get all stores
+
+    for store in stores:
+
+        store.products = Product.query.filter_by(                           #get all products belonging to this store
+            store_id=store.id
+        ).all()
 
     return render_template(
         'manage_stores.html',
