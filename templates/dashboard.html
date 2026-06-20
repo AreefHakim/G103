@@ -233,6 +233,13 @@
                                     + Add New Product to Store
                                 </a>
                             {% endif %}
+
+                            {% if current_user.username == 'admin' %}
+                            <a href="{{ url_for('manage_stores') }}"
+                            class="btn btn-danger">
+                            Manage Stores
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
