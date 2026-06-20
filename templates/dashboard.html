@@ -252,55 +252,31 @@
 
             <div class="list-group list-group-flush rounded-3 overflow-hidden">
 
-                {% if stores %}
+               {% if stores %}
 
-                    {% for store in stores %}
+    {% for store in stores %}
 
-                    <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+    <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
 
-                        <span>{{ store.name }}</span>
+        <span>{{ store.name }}</span>
 
-                        <span class="badge badge-rating px-3 py-2">
-                            ★ {{ "%.1f"|format(store.avg_rating) }}
-                        </span>
+        <span class="badge badge-rating px-3 py-2">
+            ★ {{ "%.1f"|format(store.avg_rating) }}
+        </span>
 
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card analytics-card h-100">
-                            <div class="card-body p-4">
-                                <h4 class="section-title mb-4">🔥 Most Viewed Products</h4>
-                                <div class="list-group list-group-flush rounded-3 overflow-hidden">
-                                    {% if products %}
-                                        {% for product in products %}
-<div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
-    <div>
-        <span>{{ product[0].name }}</span>
-        <small class="text-muted-custom d-block">
-            {{ product[1] }} views
-        </small>
     </div>
 
-    <span class="badge badge-rating px-3 py-2">
-    ★ {{ "%.1f"|format(store.avg_rating) }}
-</span>
-</div>
-{% endfor %}
-                                    {% else %}
-                                        <div class="text-center text-muted-custom py-4">No products available yet.</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    {% endfor %}
 
-                {% endif %}
+{% else %}
 
-            </div>
-        </div>
+    <div class="text-center text-muted-custom py-4">
+        No stores available yet.
     </div>
-</div>
 
+{% endif %}
+
+  
                     <div class="col-md-6">
     <div class="card analytics-card h-100">
         <div class="card-body p-4">
