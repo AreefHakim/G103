@@ -216,10 +216,10 @@
                                     <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
                                         🏠 Go to My Store
                                     </a>
-                                 {% else %}
+                                {% elif current_user.username != 'admin' %}
                                     <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
                                         + Register Your Store
-                                    </a>
+                                     </a>
                                 {% endif %}
 
                                 <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
