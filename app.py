@@ -43,18 +43,22 @@ class Store(db.Model):
 
     description = db.Column(db.String(200))
 
-    phone_number = db.Column(db.String(20), nullable=True)                                 #phone number support
+    phone_number = db.Column(db.String(20), nullable=True)
 
-    rating = db.Column(
-        db.Float,
-        default=0
-    )
+    rating = db.Column(db.Float, default=0)
 
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('user.id'),
         nullable=False
     )
+
+    products = db.relationship(                                     #creates connection between store and product
+        'Product',
+        backref='store',                                         #adds a store property
+        lazy=True                                                 #only load stuff when needed
+    )
+
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)                                               #creates unique id for every product
 
