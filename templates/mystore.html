@@ -39,43 +39,7 @@
                     <h2 class="display-5 mt-2 mb-4">{{ store.name }}</h2>
                     <p class="description mb-5">{{ store.description }}</p>
                     <div class="mb-4">
-    <form method="POST"
-          action="{{ url_for('rate_store', store_id=store.id) }}"
-          class="d-flex justify-content-center align-items-center gap-2">
-
-        <select name="rating" class="form-select form-select-sm w-auto">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-
-        <button type="submit"
-                class="btn btn-sm btn-warning fw-bold">
-            Rate Store
-        </button>
-    </form>
-</div>
-                        
-    <form method="POST"
-          action="{{ url_for('rate_store', store_id=store.id) }}"
-          class="d-flex justify-content-center align-items-center gap-2">
-
-        <select name="rating" class="form-select form-select-sm w-auto">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-
-        <button type="submit"
-                class="btn btn-sm btn-warning fw-bold">
-            Rate Store
-        </button>
-    </form>
-</div>
+ 
                     
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
                         <a href="{{ url_for('add_product') }}" class="btn btn-primary px-4 fw-bold" style="background: white; color: black; border: none; border-radius: 10px;">
