@@ -417,22 +417,17 @@ def my_store():
 def delete_store(store_id):
 
     store = Store.query.get_or_404(store_id)
-                                                                                                    
+
     if current_user.username != 'admin' and \
-       store.user_id != current_user.id:                                                            #for ADMIN to delete stores
+       store.user_id != current_user.id:                                                                 #For admin to delete stores
+        return jsonify({"error": "Unauthorized"}), 403
 
-        return jsonify({
-            "error": "Unauthorized"
-        }), 403
-
-    Product.query.filter_by(
-        store_id=store.id
-    ).delete()
+    Product.query.filter_by(store_id=store.id).delete()
 
     db.session.delete(store)
     db.session.commit()
 
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('manage_stores'))
 
 #Product routes
 
