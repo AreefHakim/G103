@@ -367,9 +367,13 @@ def forgotpassword():
 
 #store routes
 
-@app.route('/register-store', methods=['GET', 'POST'])                                                                        #combined both api and html for store registration 
+@app.route('/register-store', methods=['GET', 'POST'])
 @login_required
 def register_store():
+
+    if current_user.username == 'admin':
+        flash('Admins cannot register stores.', 'danger')
+        return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
 
@@ -387,11 +391,16 @@ def register_store():
                 .replace('+', '')
 
             if cleaned_phone.startswith('60'):
-                cleaned_phone = cleaned_phone[2:]                                                            #automatically formats malaysian phone numbers
+                cleaned_phone = cleaned_phone[2:]
 
             phone_number = cleaned_phone
 
-        new_store = Store(name=store_name, description=description,phone_number=phone_number,owner=current_user)
+        new_store = Store(
+            name=store_name,
+            description=description,
+            phone_number=phone_number,
+            owner=current_user
+        )
 
         db.session.add(new_store)
         db.session.commit()
