@@ -6,104 +6,139 @@
     <title>Register Store - MMU EXCHANGE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
         body {
-            background-color: #0b0b0f;
-            color: #ffffff;
-            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #f8fafc; /* Slate 50 (Cerah, bersih & premium) */
+            color: #0f172a; /* Slate 900 */
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             margin: 0;
         }
 
+        /* Ambient Glow versi Light Mode menggunakan warna korporat MMU */
         .glow {
             position: fixed;
-            top: 0; left: 50%; transform: translateX(-50%);
-            width: 800px; height: 400px;
-            background: radial-gradient(circle, rgba(94, 59, 238, 0.12) 0%, rgba(11, 11, 15, 0) 70%);
+            top: -10%; left: 50%; transform: translateX(-50%);
+            width: 1000px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 114, 206, 0.06) 0%, rgba(220, 53, 69, 0.03) 50%, rgba(248, 250, 252, 0) 70%);
             z-index: 0;
+            pointer-events: none;
         }
 
+        /* Kad Premium Cerah */
         .register-card {
             position: relative;
             z-index: 1;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #2e2e32;
-            border-radius: 20px;
-            backdrop-filter: blur(12px);
-            padding: 2.5rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             margin: auto;
+            box-shadow: 0 15px 35px rgba(0, 114, 206, 0.04);
+            transition: all 0.3s ease;
         }
 
+        /* Fokus pada mana-mana input akan menyerlahkan border kad */
+        .register-card:focus-within {
+            border-color: #cbd5e1;
+            box-shadow: 0 20px 40px rgba(0, 114, 206, 0.06);
+        }
+
+        /* Jenama Gradien Khas MMU */
         .mmu-brand {
             font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(180deg, #ffffff 0%, #d1d1d1 100%);
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #0072ce 0%, #dc3545 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
             display: block;
         }
 
-        /* --- PENYELESAIAN TULISAN GELAP --- */
+        .text-muted {
+            color: #64748b !important; /* Slate 500 */
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
         .form-label {
-            color: #e1e1e6 !important; /* Putih cerah */
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 1px;
+            color: #475569 !important; /* Slate 600 */
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
             margin-bottom: 8px;
             display: block;
         }
 
-        .text-muted {
-            color: #b0b0b3 !important; /* Kelabu cerah */
+        /* Gaya Input & Textarea Premium */
+        .form-control {
+            background-color: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
         }
 
-        .form-control {
-            background-color: #16161a !important;
-            border: 1px solid #3a3a3e !important;
-            color: white !important;
-            padding: 12px;
-            border-radius: 8px;
+        /* Fokus Input Cerah */
+        .form-control:focus {
+            border-color: #0072ce !important;
+            box-shadow: 0 0 0 4px rgba(0, 114, 206, 0.12);
+            outline: none;
         }
 
         .form-control::placeholder {
-            color: #66666e;
+            color: #94a3b8;
+            font-size: 0.9rem;
         }
 
+        /* Butang Solid Premium dengan Rona MMU */
         .btn-primary {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 700;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            transition: 0.2s;
+            background: linear-gradient(135deg, #0072ce 0%, #dc3545 100%) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none !important;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 114, 206, 0.15);
         }
 
         .btn-primary:hover {
-            background-color: #e2e2e2;
-            transform: translateY(-2px);
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.2);
         }
 
         .link-back {
-            color: #b0b0b3;
+            color: #64748b;
             text-decoration: none;
             font-size: 0.85rem;
+            transition: all 0.2s ease;
+            font-weight: 600;
         }
 
-        .link-back:hover { color: #ffffff; }
+        .link-back:hover { 
+            color: #0072ce; 
+        }
     </style>
 </head>
 <body>
+    <!-- Ambient Glow System (Biru & Merah MMU) -->
     <div class="glow"></div>
 
-    <div class="register-card shadow-lg">
+    <div class="register-card">
         <div class="text-center mb-4">
             <span class="mmu-brand">MMU EXCHANGE</span>
-            <p class="text-muted small mt-2">Setup your business profile</p>
+            <p class="text-muted mt-1">Setup your business profile</p>
         </div>
         
         <form method="POST">
@@ -114,13 +149,13 @@
 
             <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea name="description" class="form-control" rows="3" placeholder="Tell us what you are selling..."></textarea>
+                <textarea name="description" class="form-control" rows="3" placeholder="Tell us what you are selling..." style="resize: none;"></textarea>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Phone Number (WhatsApp)</label>
                 <input type="text" name="phone_number" class="form-control" placeholder="E.g., 0123456789" required>
-                <div class="small mt-1" style="color: #66666e; font-size: 0.75rem;">
+                <div class="mt-2" style="color: #64748b; font-size: 0.8rem; line-height: 1.4; font-weight: 500;">
                     Enter number without country code '60' (E.g., 0123456789).
                 </div>
             </div>

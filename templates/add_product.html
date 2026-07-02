@@ -6,99 +6,120 @@
     <title>Add Product - MMU EXCHANGE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { 
-            background-color: #0b0b0f; 
-            color: white; 
-            font-family: 'Inter', -apple-system, sans-serif;
-            min-height: 100vh;
-            overflow-y: auto; /* Forces vertical scrollbar to be active */
-            padding-bottom: 60px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        .glow {
-            position: fixed;
-            top: 0; left: 50%; transform: translateX(-50%);
-            width: 1000px; height: 400px;
-            background: radial-gradient(circle, rgba(94, 59, 238, 0.08) 0%, rgba(11, 11, 15, 0) 70%);
-            z-index: 0;
-            pointer-events: none;
+        body { 
+            background-color: #f8fafc; /* Slate 50 (Cerah, bersih & premium) */
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 114, 206, 0.04) 0%, transparent 50%); 
+            color: #0f172a; /* Slate 900 */
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            overflow-y: auto;
+            padding-bottom: 60px;
+            letter-spacing: -0.01em;
         }
 
         .navbar {
-            background: rgba(11, 11, 15, 0.8) !important;
+            background: rgba(255, 255, 255, 0.8) !important;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid #2e2e32;
+            border-bottom: 1px solid #e2e8f0;
         }
 
+        .navbar-brand {
+            color: #0f172a !important;
+        }
+
+        .btn-cancel {
+            border: 1px solid #cbd5e1 !important;
+            color: #475569 !important;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: #dc3545 !important;
+            color: #dc3545 !important;
+            background: #fff5f5;
+        }
+
+        /* FORM CONTAINER CERAH */
         .form-container {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(15px);
-            border: 1px solid #2e2e32;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 24px;
             padding: 40px;
             margin-top: 50px;
             margin-bottom: 50px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 114, 206, 0.02);
             position: relative;
             z-index: 1;
         }
 
+        /* INPUT FIELDS CERAH */
         .form-control, .form-select {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid #3a3a40 !important;
-            color: #ffffff !important;
+            background-color: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
             border-radius: 12px;
             padding: 12px;
+            font-weight: 500;
         }
 
-        /* Brightens input placeholder text for high contrast */
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.35) !important;
+            color: #94a3b8 !important; /* Slate 400 */
         }
 
+        /* FOCUS STATE (Tema Biru MMU) */
         .form-control:focus, .form-select:focus {
-            border-color: #5e3bee !important;
-            box-shadow: 0 0 10px rgba(94, 59, 238, 0.3) !important;
+            border-color: #0072ce !important;
+            box-shadow: 0 0 0 4px rgba(0, 114, 206, 0.1) !important;
         }
 
-        /* Styles fallback dropdown selections for readability over dark background */
         .form-select option {
-            background-color: #14141c;
-            color: white;
+            background-color: #ffffff;
+            color: #0f172a;
         }
 
+        textarea.form-control {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        /* BUTTON SUBMIT GRADIENT (Tema MMU) */
         .btn-submit {
-            background-color: #ffffff;
-            color: #000000;
+            background: linear-gradient(135deg, #0072ce 0%, #00569e 100%) !important;
+            color: #ffffff !important;
             font-weight: 700;
             border-radius: 12px;
             padding: 14px;
             border: none;
-            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 114, 206, 0.15);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .btn-submit:hover {
-            background-color: #e2e2e2;
             transform: translateY(-2px);
+            opacity: 0.95;
+            box-shadow: 0 6px 20px rgba(0, 114, 206, 0.25);
         }
 
+        /* LABEL FORM STYLE */
         .custom-label {
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-weight: 600;
+            color: #475569 !important; /* Slate 600 */
+            font-weight: 700;
+            margin-bottom: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div class="glow"></div>
-
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">MMU EXCHANGE</a>
-            <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('my_store') }}">Cancel</a>
+            <a class="btn btn-cancel btn-sm px-3" href="{{ url_for('my_store') }}">Cancel</a>
         </div>
     </nav>
 
@@ -106,7 +127,8 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="form-container">
-                    <h2 class="text-center fw-bold mb-4" style="background: linear-gradient(180deg, #ffffff 0%, #a2a2a2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Add New Product</h2>
+                    
+                    <h2 class="text-center fw-bold mb-4" style="background: linear-gradient(135deg, #0072ce 0%, #dc3545 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">Add New Product</h2>
                     
                     <form action="{{ url_for('add_product') }}" method="POST">
                         
@@ -133,6 +155,11 @@
                         <div class="mb-3 d-none" id="other_category_div">
                             <label class="form-label custom-label">Specify Other Category</label>
                             <input type="text" name="other_category" id="other_category" class="form-control" placeholder="Type your category here">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label custom-label">Product Description</label>
+                            <textarea name="description" class="form-control" placeholder="Describe item condition, warranty, or details..." required></textarea>
                         </div>
 
                         <div class="mb-4">

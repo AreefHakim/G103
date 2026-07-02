@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,165 +7,246 @@
     <title>Marketplace - MMU EXCHANGE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         body { 
-            background-color: #0b0b0f; 
-            color: #ffffff; 
-            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; /* Latar belakang cerah (Slate 50) */
+            color: #0f172a; /* Teks utama gelap (Slate 900) */
+            font-family: 'Plus Jakarta Sans', sans-serif; 
             min-height: 100vh;
+            letter-spacing: -0.01em;
         }
 
+        /* Ambient Glow versi cerah menggunakan tona Biru MMU */
+        .glow-bg {
+            position: fixed;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 1200px; height: 400px;
+            background: radial-gradient(circle at 50% 0%, rgba(0, 114, 206, 0.06) 0%, rgba(248, 250, 252, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* TAJUK GRADIENT: Kekal kecerunan premium Biru & Merah Korporat MMU */
         .header-section h1 {
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #0072ce 0%, #e00034 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 800;
+            letter-spacing: -0.03em;
         }
 
         .header-section p {
-            color: rgba(255, 255, 255, 0.8) !important;
+            color: #64748b !important; /* Teks sekunder cerah */
             font-size: 1.1rem;
+            font-weight: 500;
         }
 
+        /* LENCANA UTAMA CERAH */
         .marketplace-badge {
-            background: #5a47cf;
-            color: white !important;
-            padding: 4px 12px;
-            border-radius: 4px;
+            background: rgba(0, 114, 206, 0.06);
+            color: #0072ce !important;
+            padding: 6px 16px;
+            border-radius: 100px;
             font-weight: 700;
-            letter-spacing: 2px;
+            font-size: 0.8rem !important;
+            letter-spacing: 1.5px;
             display: inline-block;
-            box-shadow: 0 0 15px rgba(90, 71, 207, 0.4);
+            border: 1px solid rgba(0, 114, 206, 0.15);
         }
 
-        .search-control {
-            background-color: #121217 !important;
-            border: 1px solid #2e2e32 !important;
-            color: #ffffff !important;
+        /* KOTAK CARIAN & ISIH (CERAH) */
+        .search-control, .sort-select {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
             padding: 14px 20px;
             border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .search-control:focus {
-            border-color: #a288ff !important;
-            box-shadow: 0 0 15px rgba(162, 136, 255, 0.15);
-            outline: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .search-control::placeholder {
-            color: #55555c;
+            color: #94a3b8;
         }
 
-        .sort-select {
-            background-color: #121217 !important;
-            border: 1px solid #2e2e32 !important;
-            color: #ffffff !important;
-            padding: 14px 20px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .sort-select:focus {
-            border-color: #a288ff !important;
-            box-shadow: 0 0 15px rgba(162, 136, 255, 0.15);
+        /* FOKUS KOTAK CARIAN */
+        .search-control:focus, .sort-select:focus {
+            border-color: #0072ce !important;
+            box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.15);
             outline: none;
         }
 
+        /* BUTANG PENAPIS (FILTER) CERAH */
         .filter-btn {
-            border: 1px solid #2e2e32;
-            background: transparent;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 8px 18px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: all 0.2s ease;
         }
 
         .filter-btn:hover {
-            border-color: #a288ff;
-            color: #ffffff;
-            background: rgba(162, 136, 255, 0.05);
+            border-color: #cbd5e1;
+            color: #0f172a;
+            background: #f8fafc;
+            transform: translateY(-1px);
         }
 
+        /* BUTANG AKTIF */
         .filter-btn.active {
-            background: #a288ff !important;
-            border-color: #a288ff !important;
-            color: #0b0b0f !important;
-            box-shadow: 0 0 15px rgba(162, 136, 255, 0.3);
+            background: linear-gradient(135deg, #0072ce 0%, #e00034 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(0, 114, 206, 0.2);
         }
 
+        /* KAD PRODUK CERAH PREMIUM */
         .product-card {
-            background: #121217;
-            border: 1px solid #2e2e32;
-            border-radius: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             display: flex;
             flex-direction: column;
             height: 100%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.01);
         }
 
+        /* HOVER KAD */
         .product-card:hover {
-            transform: translateY(-8px);
-            border-color: #a288ff; 
-            box-shadow: 0 0 20px rgba(162, 136, 255, 0.2);
+            transform: translateY(-6px);
+            border-color: rgba(0, 114, 206, 0.3); 
+            box-shadow: 0 15px 30px -10px rgba(0, 114, 206, 0.08), 0 0 25px 0 rgba(0, 114, 206, 0.02);
+        }
+
+        /* SKELETON LOADING SHIMMER (VERSI CERAH) */
+        .image-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .skeleton {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+            z-index: 2;
+            transition: opacity 0.4s ease;
+        }
+
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .product-card-img {
             height: 200px;
             object-fit: cover;
-            border-bottom: 1px solid #2e2e32;
+            border-bottom: 1px solid #e2e8f0;
             width: 100%;
-            background: #1a1a1e;
+            opacity: 0; 
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .product-card-img.loaded {
+            opacity: 1; 
+        }
+        
+        .product-card:hover .product-card-img.loaded {
+            transform: scale(1.04);
         }
 
         .price-tag { 
-            color: #a288ff; 
+            color: #0f172a; 
             font-weight: 800; 
-            font-size: 1.2rem;
+            font-size: 1.35rem;
         }
 
+        /* LENCANA KATEGORI KAD CERAH */
         .badge-category {
             font-size: 0.7rem;
-            letter-spacing: 1px;
-            background: rgba(162, 136, 255, 0.2);
-            color: #a288ff;
+            letter-spacing: 0.5px;
+            background: rgba(0, 114, 206, 0.06);
+            color: #0072ce;
             padding: 5px 12px;
             border-radius: 6px;
-            font-weight: 600;
-            border: 1px solid rgba(162, 136, 255, 0.3);
+            font-weight: 700;
+            border: 1px solid rgba(0, 114, 206, 0.1);
         }
 
+        /* KAUNTER PANDANGAN (VIEWS) */
+        .view-counter-text {
+            color: #0072ce !important;
+        }
+
+        /* BUTANG LIHAT BUTIRAN (DETAILS) CERAH */
         .btn-view {
-            position: relative;
-            z-index: 5;
-            transition: 0.2s;
-            text-decoration: none;
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #475569 !important;
+             Sherwood;
+            font-weight: 600 !important;
+            font-size: 0.9rem;
+            border-radius: 10px !important;
+            padding: 8px 18px;
+            transition: all 0.2s ease;
         }
 
+        /* HOVER BUTANG DETAILS */
         .btn-view:hover {
-            background-color: #a288ff !important;
-            color: white !important;
+            transform: scale(1.03);
+            border-color: transparent !important;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #0072ce 0%, #e00034 100%) !important;
+            box-shadow: 0 4px 15px rgba(224, 0, 52, 0.25);
         }
 
-        .empty-state h3 { color: #ffffff !important; font-weight: 700; }
-        .empty-state p { color: rgba(255, 255, 255, 0.6) !important; }
+        /* EMPTY STATES CERAH */
+        .empty-state h3 { color: #0f172a !important; font-weight: 700; }
+        .empty-state p { color: #64748b !important; }
+        
+        .empty-card-wrapper {
+            background: #ffffff; 
+            border-radius: 18px; 
+            border: 2px dashed #cbd5e1;
+        }
+
+        .no-results-wrapper {
+            background: #ffffff; 
+            border-radius: 18px; 
+            border: 1px dashed #e2e8f0;
+        }
+        
+        .btn-empty-action {
+            background: linear-gradient(135deg, #0072ce, #e00034) !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(0, 114, 206, 0.15);
+        }
     </style>
 </head>
 <body>
 
+    <!-- Ambient Glow Effect -->
+    <div class="glow-bg"></div>
+
     <div class="container py-5">
         <div class="text-center mb-5 header-section">
             <div class="mb-3">
-                <span class="marketplace-badge text-uppercase" style="font-size: 0.7rem;">Marketplace</span>
+                <span class="marketplace-badge text-uppercase">MMU Marketplace</span>
             </div>
             <h1 class="display-4">Store Directory</h1>
-            <p>Browse through all products and services available at MMU.</p>
+            <p>Explore all products and services from your fellow MMU students!</p>
             <div class="mt-4">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light px-4" style="border-radius: 10px;">Back to Dashboard</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-sm px-4 py-2 text-secondary" style="border-radius: 20px; border-color: #cbd5e1; background: #ffffff; font-size: 0.85rem; font-weight: 600;">← Back to Dashboard</a>
             </div>
         </div>
 
@@ -172,25 +254,26 @@
             <div class="col-md-10">
                 <div class="row g-3 justify-content-center">
                     <div class="col-md-7">
-                        <input type="text" id="searchBar" class="form-control search-control" placeholder="Search products by name...">
+                        <input type="text" id="searchBar" class="form-control search-control" placeholder="🔍 Search for items or services...">
                     </div>
                     <div class="col-md-4">
                         <select id="sortSelect" class="form-select sort-select">
                             <option value="default">Sort By: Default</option>
-                            <option value="price_low">Price: Low to High</option>
-                            <option value="price_high">Price: High to Low</option>
-                            <option value="popularity">Popularity (Most Viewed)</option>
-                            <option value="rating">Top Rated Stores</option>
+                            <option value="price_low">💰 Price: Low to High</option>
+                            <option value="price_high">💸 Price: High to Low</option>
+                            <option value="popularity">🔥 Popularity (Most Viewed)</option>
+                            <option value="rating">⭐ Top Rated Stores</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="d-flex flex-wrap gap-2 justify-content-center mt-4" id="categoryFilters">
                     <button class="filter-btn active" data-category="all">All Items</button>
-                    <button class="filter-btn" data-category="Electronics">Electronics</button>
-                    <button class="filter-btn" data-category="Books">Books</button>
-                    <button class="filter-btn" data-category="Clothing">Clothing</button>
-                    <button class="filter-btn" data-category="Others">Others</button>
+                    <button class="filter-btn" data-category="Electronics">⚡ Electronics</button>
+                    <button class="filter-btn" data-category="Books">📚 Books</button>
+                    <button class="filter-btn" data-category="Clothing">🛍️ Clothing & Fashion</button>
+                    <button class="filter-btn" data-category="Food">🍿 Food & Snacks</button>
+                    <button class="filter-btn" data-category="Others">✨ Others</button>
                 </div>
             </div>
         </div>
@@ -205,38 +288,41 @@
                  data-rating="{{ product.store.rating if product.store else 0 }}"> 
                 
                 <div class="product-card">
-                    {% if product.image_url %}
-                        <img src="{{ product.image_url }}" class="product-card-img" alt="{{ product.name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60';">
-                    {% else %}
-                        {% if product.category and 'book' in product.category.lower() %}
-                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books">
-                        {% elif product.category and ('tech' in product.category.lower() or 'gadget' in product.category.lower()) %}
-                            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets">
+                    <div class="image-container">
+                        <div class="skeleton"></div>
+                        
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" class="product-card-img" alt="{{ product.name }}" onload="imageLoaded(this)" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60'; imageLoaded(this);">
                         {% else %}
-                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}">
+                            {% if product.category and 'book' in product.category.lower() %}
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Books" onload="imageLoaded(this)">
+                            {% elif product.category and ('tech' in product.category.lower() or 'gadget' in product.category.lower()) %}
+                                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="Gadgets" onload="imageLoaded(this)">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" class="product-card-img" alt="{{ product.name }}" onload="imageLoaded(this)">
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    </div>
 
-                    <div class="p-4 d-flex flex-column flex-grow-1">
-                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
                             <span class="badge-category text-uppercase">{{ product.category if product.category else 'General' }}</span>
-                            <div class="d-flex align-items-center gap-1 text-white-50" style="font-size: 0.85rem;">
+                            <div class="d-flex align-items-center gap-1 text-secondary" style="font-size: 0.8rem;">
                                 <span>👁️</span>
-                                <span class="fw-semibold" style="color: rgba(255, 255, 255, 0.65);">{{ product.views if product.views else 0 }}</span>
+                                <span class="fw-bold view-counter-text">{{ product.views if product.views else 0 }}</span>
                             </div>
                         </div>
                         
-                        <h5 class="fw-bold text-white mb-2 text-truncate" style="font-size: 1.1rem;" title="{{ product.name }}">{{ product.name }}</h5>
+                        <h5 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 1.05rem;" title="{{ product.name }}">{{ product.name }}</h5>
                         
-                        <p class="price-tag mb-1">RM {{ "%.2f"|format(product.price) }}</p>
-                        
-                        <p class="small mb-4" style="color: rgba(255,255,255,0.5);">
-                            Store: <span style="color: #a288ff;">{{ product.store.name if product.store else 'Unknown' }}</span> (★{{ "%.1f"|format(product.store.rating) if product.store else '0.0' }})
+                        <p class="small mb-3" style="color: #64748b; font-size: 0.85rem;">
+                            By <span class="fw-semibold text-dark">{{ product.store.name if product.store else 'Unknown' }}</span> <span style="color: #fbbf24;">★</span><span class="text-warning fw-bold">{{ "%.1f"|format(product.store.rating) if product.store else '0.0' }}</span>
                         </p>
-                        
-                        <div class="d-grid mt-auto">
-                            <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-light fw-bold py-2 btn-view" style="border-radius: 10px;">
-                                View Details
+
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2" style="border-top: 1px solid #e2e8f0;">
+                            <p class="price-tag mb-0">RM {{ "%.2f"|format(product.price) }}</p>
+                            <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-view">
+                                Details →
                             </a>
                         </div>
                     </div>
@@ -244,10 +330,10 @@
             </div>
             {% else %}
             <div class="col-12 text-center py-5 empty-state" id="emptyState">
-                <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
-                    <h3>No products listed yet.</h3>
-                    <p>Be the first one to start selling!</p>
-                    <a href="{{ url_for('add_product') }}" class="btn btn-primary btn-lg mt-3" style="background: white; color: black; border: none; font-weight: 700; border-radius: 12px;">
+                <div class="p-5 empty-card-wrapper">
+                    <h3 class="mb-2">🛍️ No products listed yet.</h3>
+                    <p>Be the first hero to start selling on MMU Exchange!</p>
+                    <a href="{{ url_for('add_product') }}" class="btn btn-empty-action btn-md mt-3 fw-bold" style="border-radius: 12px; padding: 12px 24px;">
                         + Add My First Product
                     </a>
                 </div>
@@ -255,15 +341,27 @@
             {% endfor %}
             
             <div class="col-12 text-center py-5 empty-state d-none" id="noResultsState">
-                <div class="p-5" style="background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed #444;">
-                    <h3>No products found.</h3>
-                    <p>Try searching for a different item name or select another category.</p>
+                <div class="p-5 no-results-wrapper">
+                    <h3>🔍 No items found.</h3>
+                    <p>Try searching for a different item name or play around with other categories!</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        function imageLoaded(imgElement) {
+            const container = imgElement.closest('.image-container');
+            if (container) {
+                const skeleton = container.querySelector('.skeleton');
+                if (skeleton) {
+                    skeleton.style.opacity = '0';
+                    setTimeout(() => skeleton.remove(), 400); 
+                }
+            }
+            imgElement.classList.add('loaded'); 
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const searchBar = document.getElementById('searchBar');
             const sortSelect = document.getElementById('sortSelect');
@@ -280,10 +378,18 @@
 
                 productItems.forEach(item => {
                     const productName = item.getAttribute('data-name');
-                    const productCategory = item.getAttribute('data-category');
+                    const productCategory = item.getAttribute('data-category').toLowerCase();
+                    const currentCategoryLower = currentCategory.toLowerCase();
 
                     const matchesSearch = productName.includes(searchQuery);
-                    const matchesCategory = (currentCategory === 'all') || (productCategory === currentCategory);
+                    let matchesCategory = (currentCategory === 'all') || (productCategory === currentCategoryLower);
+                    
+                    if (currentCategoryLower === 'clothing' && (productCategory.includes('fashion') || productCategory.includes('cloth') || productCategory.includes('clothing'))) {
+                        matchesCategory = true;
+                    }
+                    if (currentCategoryLower === 'food' && (productCategory.includes('food') || productCategory.includes('snack'))) {
+                        matchesCategory = true;
+                    }
 
                     if (matchesSearch && matchesCategory) {
                         item.classList.remove('d-none');
@@ -299,7 +405,7 @@
                         if (sortValue === 'price_low') {
                             return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
                         } else if (sortValue === 'price_high') {
-                            return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                            return parseFloat(b.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
                         } else if (sortValue === 'popularity') {
                             return parseInt(b.getAttribute('data-views')) - parseInt(a.getAttribute('data-views'));
                         } else if (sortValue === 'rating') {
@@ -308,12 +414,15 @@
                         return 0;
                     });
 
-                    productItems.forEach(item => productGrid.appendChild(item));
+                    productItems.forEach(item => {
+                        productGrid.appendChild(item);
+                    });
                 }
 
                 if (productItems.length > 0) {
                     if (visibleCount === 0) {
                         noResultsState.classList.remove('d-none');
+                        productGrid.appendChild(noResultsState);
                     } else {
                         noResultsState.classList.add('d-none');
                     }

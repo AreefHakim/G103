@@ -6,182 +6,322 @@
     <title>Dashboard - MMU EXCHANGE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { 
-            background-color: #0b0b0f; 
-            min-height: 100vh; 
-            color: white;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            background-color: #f8fafc; /* Latar belakang kelabu lembut (Slate 50) yang profesional */
+            min-height: 100vh;
+            color: #0f172a; /* Warna teks gelap utama (Slate 900) */
             font-family: 'Inter', -apple-system, sans-serif;
             margin: 0;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
         }
 
+        /* Ambient Glow versi cerah dan pudar (Corporate Accent) */
         .glow {
             position: fixed;
-            top: 0; left: 50%; transform: translateX(-50%);
-            width: 1000px; height: 400px;
-            background: radial-gradient(circle, rgba(94, 59, 238, 0.1) 0%, rgba(11, 11, 15, 0) 70%);
+            top: -15%; left: 50%; transform: translateX(-50%);
+            width: 1200px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 114, 206, 0.04) 0%, rgba(224, 0, 52, 0.02) 50%, rgba(248, 250, 252, 0) 70%);
             z-index: 0;
             pointer-events: none;
         }
 
+        /* --- STYLISH NAVBAR (PUTIH BERSIH) --- */
         .navbar {
-            background: rgba(11, 11, 15, 0.8) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #2e2e32;
-            padding: 1rem 0;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.8rem 0;
             z-index: 10;
         }
 
-        .navbar-brand {
+        .navbar-brand-custom {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .navbar-logo-container {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            display: inline-flex;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .mmu-logo-cropped {
+            height: 38px;            
+            width: auto;
+            object-fit: cover;        
+            object-position: top;    
+            padding-bottom: 2px;      
+        }
+
+        .navbar-brand-custom:hover .navbar-logo-container {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand-custom span {
+            font-size: 1.1rem;
             font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(180deg, #ffffff 0%, #a2a2a2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .welcome-card { 
-            margin-top: 100px; 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(15px);
-            border-radius: 24px; 
-            border: 1px solid #2e2e32;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 1;
-        }
-
-        .analytics-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid #2e2e32;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
-        }
-
-        .display-4 {
-            font-weight: 800;
-            letter-spacing: -2px;
-            background: linear-gradient(180deg, #ffffff 0%, #d1d1d1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .section-title {
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(180deg, #ffffff 0%, #a2a2a2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .text-muted-custom {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .btn-register {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 700;
-            border-radius: 12px;
-            padding: 14px 32px;
-            transition: 0.3s;
-        }
-
-        .btn-register:hover {
-            background-color: #e2e2e2;
-            transform: translateY(-3px);
-            color: #000000;
-        }
-
-        .btn-my-store {
-            background-color: #28a745;
-            color: white;
-            font-weight: 700;
-            border-radius: 12px;
-            padding: 14px 32px;
-            transition: 0.3s;
-            border: none;
-        }
-
-        .btn-my-store:hover {
-            background-color: #218838;
-            transform: translateY(-3px);
-            color: white;
-        }
-
-        .btn-logout {
-            border: 1px solid #2e2e32;
-            color: #ffffff;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-        
-        .btn-logout:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #ff4a4a;
-            border-color: #ff4a4a;
+            letter-spacing: 1px;
+            margin-left: 12px;
+            color: #0072ce;
+            text-transform: uppercase;
         }
 
         .nav-link-custom {
-            color: rgba(255, 255, 255, 0.7);
+            color: #475569; /* Warna teks pautan sedikit gelap */
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
-            transition: 0.2s;
-            display: inline-block;
+            transition: all 0.2s ease;
         }
 
         .nav-link-custom:hover {
+            color: #0072ce;
+        }
+
+        /* --- HERO CONSOLE HEADER (WHITE CARD WITH SUBTLE SHADOW) --- */
+        .hero-section-premium {
+            margin-top: 40px;
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 60px 30px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .badge-welcome-tier {
+            background: rgba(224, 0, 52, 0.08);
+            color: #e00034;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(224, 0, 52, 0.15);
+            display: inline-block;
+        }
+
+        .gradient-username {
+            background: linear-gradient(135deg, #0072ce 0%, #e00034 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .text-muted-custom {
+            color: #64748b; /* Kelabu medium untuk pembacaan optimum */
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* --- BUTTONS GRADIENT --- */
+        .btn-action-premium {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 12px 26px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+        }
+
+        .btn-premium-store, .btn-premium-register {
+            background: linear-gradient(135deg, #0072ce 0%, #e00034 100%);
             color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 114, 206, 0.18);
         }
 
-        .btn-marketplace {
-            border-radius: 12px; 
-            font-weight: 600;
-            transition: 0.3s;
+        .btn-premium-store:hover, .btn-premium-register:hover {
+            opacity: 0.95;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 114, 206, 0.25);
         }
 
-        .btn-marketplace:hover {
+        .btn-premium-market {
+            background-color: #ffffff;
+            color: #0f172a;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium-market:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-2px);
+            color: #0f172a;
+        }
+
+        .btn-premium-add {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.18);
+        }
+
+        .btn-premium-add:hover {
+            background-color: #059669;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* --- KATEGORI CARDS (PUTIH BERSIH) --- */
+        .metrics-card-premium {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .metrics-card-premium:hover {
             transform: translateY(-3px);
+            border-color: #0072ce;
+            box-shadow: 0 10px 15px -3px rgba(0, 114, 206, 0.08);
         }
 
-        .list-group-item-custom {
-            background: rgba(255, 255, 255, 0.01) !important;
-            border-bottom: 1px solid #1f1f23 !important;
-            color: white !important;
-            padding: 1rem 1.25rem;
+        .metrics-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-mmu-blue { color: #0072ce; background: rgba(0, 114, 206, 0.08); }
+        .icon-mmu-red { color: #e00034; background: rgba(224, 0, 52, 0.08); }
+        .icon-amber { color: #d97706; background: rgba(217, 119, 6, 0.08); }
+
+        .metrics-value { font-size: 1rem; color: #0f172a; font-weight: 700; }
+
+        /* --- DATA LIST CONTAINERS --- */
+        .section-header-premium {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0f172a;
         }
 
-        .list-group-item-custom:last-child {
-            border-bottom: none !important;
+        .section-header-premium h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
         }
 
-        .badge-rating {
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.2);
-            font-weight: 600;
+        .analytics-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
         }
 
-        .badge-views {
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
-            border: 1px solid rgba(0, 123, 255, 0.2);
-            font-weight: 600;
-        }
-
-        .event-box {
-            background: rgba(162, 136, 255, 0.02);
-            border: 1px solid #2e2e32;
+        /* --- COMPACT BROWSING CARDS --- */
+        .grid-item-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: 14px;
-            transition: all 0.3s ease;
+            padding: 16px !important;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+        }
+
+        .grid-item-card:hover {
+            border-color: #0072ce !important;
+            background: #f8fafc !important;
+        }
+
+        .icon-box-svg {
+            width: 40px;
+            height: 40px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-premium-rating {
+            background: rgba(217, 119, 6, 0.06);
+            color: #b45309;
+            border: 1px solid rgba(217, 119, 6, 0.15);
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-premium-price {
+            background: rgba(0, 114, 206, 0.06);
+            color: #1d4ed8;
+            border: 1px solid rgba(0, 114, 206, 0.15);
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .btn-view-premium {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f172a;
+            background: #f1f5f9;
+            padding: 6px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view-premium:hover {
+            background: #0072ce;
+            color: #ffffff;
+            border-color: #0072ce;
+        }
+
+        /* --- BROADCAST EVENTS SECTION --- */
+        .event-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px !important;
+            transition: all 0.2s ease;
         }
 
         .event-box:hover {
-            border-color: #a288ff;
-            background: rgba(162, 136, 255, 0.04);
+            border-color: rgba(224, 0, 52, 0.2);
+            background: #fffafb;
+        }
+
+        .event-broadcast-icon {
+            color: #e00034;
+            background: rgba(224, 0, 52, 0.06);
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
@@ -189,111 +329,221 @@
 
     <div class="glow"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">MMU EXCHANGE</a>
-            <div class="ms-auto d-flex align-items-center gap-4">
+            <a class="navbar-brand-custom" href="{{ url_for('dashboard') }}">
+                <div class="navbar-logo-container">
+                    <img src="https://i.postimg.cc/XYhKtpgD/logo1.png" alt="MMU Logo" class="mmu-logo-cropped">
+                </div>
+                <span>Exchange</span>
+            </a>
+            
+            <div class="ms-auto d-flex align-items-center gap-3 gap-md-4">
                 {% if current_user.store %}
                     <a href="{{ url_for('my_store') }}" class="nav-link-custom">My Store</a>
                 {% endif %}
-                <a href="{{ url_for('profile') }}" class="nav-link-custom">👤 My Profile</a>
-                <a class="btn btn-logout px-4" href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('profile') }}" class="nav-link-custom d-flex align-items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Account Profile
+                </a>
+                <a class="btn btn-outline-danger px-3 px-md-4" href="{{ url_for('logout') }}" style="border-radius: 10px; font-weight: 600; font-size: 0.85rem;">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="container pb-5">
+        
         <div class="row justify-content-center">
-            <div class="col-md-10 text-center">
-                <div class="card welcome-card">
-                    <div class="card-body p-5">
-                        <h1 class="display-4 mb-3">Welcome Back, {{ current_user.username }}!</h1>
-                        <p class="lead text-muted-custom mb-5">You are successfully logged in. Ready to manage your business at MMU?</p>
-                        
-                        <div class="d-flex flex-column align-items-center gap-3">
-                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                {% if current_user.store %}
-                                    <a href="{{ url_for('my_store') }}" class="btn btn-my-store btn-lg px-5">
-                                        🏠 Go to My Store
-                                    </a>
-                                Dadah {% else %}
-                                    <a href="{{ url_for('register_store') }}" class="btn btn-register btn-lg px-5">
-                                        + Register Your Store
-                                    </a>
-                                {% endif %}
+            <div class="col-md-11">
+                <div class="hero-section-premium text-center">
+                    <span class="badge-welcome-tier">Verified Merchant Console</span>
+                    <h1 class="display-6 fw-bold mb-3 text-dark mt-2">
+                        Welcome Back, <span class="gradient-username">{{ current_user.username }}</span>
+                    </h1>
+                    <p class="text-muted-custom mb-4 style-text" style="max-width: 540px; margin: 0 auto 2.5rem auto;">
+                        Manage your enterprise operations, analyze marketplace metrics, and track dynamic engagement across MMU campuses.
+                    </p>
+                    
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        {% if current_user.store %}
+                            <a href="{{ url_for('my_store') }}" class="btn-action-premium btn-premium-store">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                Go to My Store
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('register_store') }}" class="btn-action-premium btn-premium-register">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Register Your Store
+                            </a>
+                        {% endif %}
 
-                                <a href="{{ url_for('products') }}" class="btn btn-outline-light btn-marketplace btn-lg px-5">
-                                    View Marketplace
-                                </a>
+                        <a href="{{ url_for('products') }}" class="btn-action-premium btn-premium-market">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            Browse Marketplace
+                        </a>
+
+                        {% if current_user.store %}
+                            <a href="{{ url_for('add_product') }}" class="btn-action-premium btn-premium-add">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                List New Item
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-11">
+                <div class="row g-3">
+                    
+                    <div class="col-6 col-md-3">
+                        <a href="{{ url_for('products') }}?category=Electronics" class="text-decoration-none">
+                            <div class="metrics-card-premium justify-content-center py-3">
+                                <div class="metrics-icon icon-mmu-blue">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                </div>
+                                <div class="text-center text-md-start">
+                                    <div class="metrics-value">Tech & Gadgets</div>
+                                </div>
                             </div>
+                        </a>
+                    </div>
 
-                            {% if current_user.store %}
-                                <p class="text-muted-custom mt-4 mb-2 small">Manage your inventory:</p>
-                                <a href="{{ url_for('add_product') }}" class="nav-link-custom" style="border: 1px dashed rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px;">
-                                    + Add New Product to Store
-                                </a>
+                    <div class="col-6 col-md-3">
+                        <a href="{{ url_for('products') }}?category=Books" class="text-decoration-none">
+                            <div class="metrics-card-premium justify-content-center py-3">
+                                <div class="metrics-icon icon-mmu-red">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                </div>
+                                <div class="text-center text-md-start">
+                                    <div class="metrics-value">Books & Notes</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <a href="{{ url_for('products') }}?category=Clothing" class="text-decoration-none">
+                            <div class="metrics-card-premium justify-content-center py-3">
+                                <div class="metrics-icon icon-mmu-blue">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                </div>
+                                <div class="text-center text-md-start">
+                                    <div class="metrics-value">Fashion & Clothes</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <a href="{{ url_for('products') }}?category=Food" class="text-decoration-none">
+                            <div class="metrics-card-premium justify-content-center py-3">
+                                <div class="metrics-icon icon-mmu-red">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                </div>
+                                <div class="text-center text-md-start">
+                                    <div class="metrics-value">Food & Snacks</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-11">
+                <div class="row g-4 g-md-5">
+                    
+                    <div class="col-md-6">
+                        <div class="section-header-premium mb-4">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                            <h4>Top-Rated Stores</h4>
+                        </div>
+                        <div class="row g-3">
+                            {% if stores %}
+                                {% for store in stores %}
+                                <div class="col-12">
+                                    <div class="card p-3 grid-item-card">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="icon-box-svg flex-shrink-0">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="16"></line><line x1="15" y1="22" x2="15" y2="16"></line><line x1="9" y1="16" x2="15" y2="16"></line></svg>
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <h6 class="mb-1 text-dark text-truncate" style="font-weight: 600; font-size: 0.95rem;">{{ store.name }}</h6>
+                                                <span class="badge badge-premium-rating px-2 py-1 small">
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                                    {{ "%.1f"|format(store.rating) }}
+                                                </span>
+                                            </div>
+                                            <a href="{{ url_for('view_store', store_id=store.id) }}" class="btn-view-premium ms-auto">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12">
+                                    <div class="text-center text-muted-custom py-5 analytics-card" style="border-radius: 14px; font-size: 0.9rem;">
+                                        No stores registered under management console.
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="section-header-premium mb-4">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <h4>Most Viewed Products</h4>
+                        </div>
+                        <div class="row g-3">
+                            {% if products %}
+                                {% for product in products %}
+                                <div class="col-12">
+                                    <div class="card p-3 grid-item-card">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="icon-box-svg flex-shrink-0">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <h6 class="mb-1 text-dark text-truncate" style="font-weight: 600; font-size: 0.95rem;">{{ product.name }}</h6>
+                                                <span class="badge badge-premium-price px-2 py-1 small">
+                                                    RM {{ "%.2f"|format(product.price) }}
+                                                </span>
+                                            </div>
+                                            <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn-view-premium ms-auto">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12">
+                                    <div class="text-center text-muted-custom py-5 analytics-card" style="border-radius: 14px; font-size: 0.9rem;">
+                                        No merchant products discovered yet.
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
         <div class="row justify-content-center mt-5">
-            <div class="col-md-10">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card analytics-card h-100">
-                            <div class="card-body p-4">
-                                <h4 class="section-title mb-4">⭐ Top-Rated Stores</h4>
-                                <div class="list-group list-group-flush rounded-3 overflow-hidden">
-                                    {% if stores %}
-                                        {% for store in stores %}
-                                        <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
-                                            <span>{{ store.name }}</span>
-                                            <span class="badge badge-rating px-3 py-2">★ {{ "%.1f"|format(store.rating) }}</span>
-                                        </div>
-                                        {% endfor %}
-                                    {% else %}
-                                        <div class="text-center text-muted-custom py-4">No stores registered yet.</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card analytics-card h-100">
-                            <div class="card-body p-4">
-                                <h4 class="section-title mb-4">🔥 Most Viewed Products</h4>
-                                <div class="list-group list-group-flush rounded-3 overflow-hidden">
-                                    {% if products %}
-                                        {% for product in products %}
-                                        <div class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
-                                            <span>{{ product.name }}</span>
-                                            <span class="badge badge-views px-3 py-2">RM {{ "%.2f"|format(product.price) }}</span>
-                                        </div>
-                                        {% endfor %}
-                                    {% else %}
-                                        <div class="text-center text-muted-custom py-4">No products available yet.</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-10">
+            <div class="col-md-11">
                 <div class="card analytics-card">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="section-title mb-0">🔔 Event Reminders & Announcements</h4>
+                            <div class="section-header-premium">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                <h4>Event Reminders & Announcements</h4>
+                            </div>
                             {% if current_user.username == 'admin' %}
-                                <a href="{{ url_for('add_event') }}" class="btn btn-sm btn-light px-3 fw-bold" style="border-radius: 8px;">
-                                    ➕ Add New Event
+                                <a href="{{ url_for('add_event') }}" class="btn btn-sm btn-outline-dark px-3 fw-bold" style="border-radius: 8px; font-size: 0.8rem;">
+                                    + Create Event
                                 </a>
                             {% endif %}
                         </div>
@@ -302,27 +552,35 @@
                             {% if events %}
                                 {% for event in events %}
                                 <div class="col-12">
-                                    <div class="p-3 event-box d-flex align-items-start justify-content-between gap-3">
+                                    <div class="p-3 event-box d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
                                         <div class="d-flex align-items-start gap-3">
-                                            <div class="fs-3" style="color: #a288ff; line-height: 1;">📢</div>
+                                            <div class="event-broadcast-icon flex-shrink-0">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-1.5"></path><path d="M14 9l-1.5-1.5"></path><path d="M10 5L8.5 3.5"></path><path d="M16 11l-3-3"></path></svg>
+                                            </div>
                                             <div>
-                                                <h5 class="mb-1 text-white fw-bold" style="font-size: 1.05rem;">{{ event.title }}</h5>
-                                                <p class="mb-2 small" style="color: rgba(255,255,255,0.6); line-height: 1.5;">{{ event.description }}</p>
-                                                <div class="d-flex flex-wrap gap-3 small" style="color: rgba(255,255,255,0.4);">
-                                                    <span>📅 <strong>Date:</strong> {{ event.date }}</span>
-                                                    <span>📍 <strong>Location:</strong> {{ event.location }}</span>
+                                                <h5 class="mb-1 text-dark fw-bold" style="font-size: 1rem;">{{ event.title }}</h5>
+                                                <p class="mb-2 small" style="color: #64748b; line-height: 1.5; font-size: 0.88rem;">{{ event.description }}</p>
+                                                <div class="d-flex flex-wrap gap-3 small" style="color: #94a3b8; font-size: 0.8rem; font-weight: 500;">
+                                                    <span class="d-flex align-items-center gap-1">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                        Date: {{ event.date }}
+                                                    </span>
+                                                    <span class="d-flex align-items-center gap-1">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                                        Location: {{ event.location }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                         
                                         {% if current_user.username == 'admin' %}
-                                        <div class="d-flex gap-2 flex-shrink-0">
-                                            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-sm btn-outline-light px-3" style="border-radius: 8px; border-color: rgba(255,255,255,0.15); font-size: 0.8rem; transition: 0.2s;">
-                                                ✏️ Edit
+                                        <div class="d-flex gap-2 ms-md-auto pt-2 pt-md-0 width-mobile-actions">
+                                            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-sm btn-view-premium px-3" style="font-size: 0.8rem;">
+                                                Edit
                                             </a>
-                                            <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST" onsubmit="return confirm('Betul ke nak padam event ni?');" style="margin:0;">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger px-3" style="border-radius: 8px; font-size: 0.8rem; transition: 0.2s;">
-                                                    🗑️ Delete
+                                            <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST" onsubmit="return confirm('Adakah anda pasti mahu memadam acara ini?');" style="margin:0;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger px-3" style="border-radius: 8px; font-size: 0.8rem; font-weight: 600; transition: 0.2s;">
+                                                    Delete
                                                 </button>
                                             </form>
                                         </div>
@@ -331,8 +589,8 @@
                                 </div>
                                 {% endfor %}
                             {% else %}
-                                <div class="col-12 text-center text-muted-custom py-4">
-                                    No active events or reminders at the moment.
+                                <div class="col-12 text-center text-muted-custom py-4" style="font-size: 0.9rem;">
+                                    No active broadcast notifications at this hour.
                                 </div>
                             {% endif %}
                         </div>
